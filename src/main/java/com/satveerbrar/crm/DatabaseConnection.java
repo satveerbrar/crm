@@ -12,7 +12,6 @@ public class DatabaseConnection {
     public Connection getConnection(){
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
         } catch (Exception e) {
             System.out.println("Connection failed: " + e.getMessage());
