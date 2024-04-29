@@ -3,9 +3,10 @@ package com.satveerbrar.crm;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class AddClientController {
+public class AddEditClientController implements Initializable {
 
     @FXML
     private TextField firstNameInput;
@@ -37,6 +38,37 @@ public class AddClientController {
     @FXML
     private TextArea notesInput;
 
+    private Client editingClient;
+
+    @FXML
+    private Label headerLabel;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        if (editingClient != null) {
+            initializeFormWithClientData();
+        }
+    }
+
+    public void setEditingClient(Client client) {
+        this.editingClient = client;
+        if (client != null) {
+            initializeFormWithClientData();
+            headerLabel.setText("Edit Existing Client");
+        } else {
+            headerLabel.setText("Add New Client");
+        }
+    }
+
+    private void initializeFormWithClientData() {
+        firstNameInput.setText(editingClient.getFirstName());
+        lastNameInput.setText(editingClient.getLastName());
+        emailInput.setText(editingClient.getEmail());
+        phoneNumberInput.setText(editingClient.getPhoneNumber());
+        referenceInput.setText(editingClient.getReference());
+        citizenshipInput.setText(editingClient.getCitizenship());
+        notesInput.setText(editingClient.getNotes());
+    }
 
     private boolean validateEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -82,20 +114,24 @@ public class AddClientController {
 
 
     public void submitForm() {
-        if (isInputValid()) {
-            if (validateEmail(emailInput.getText()) && validatePhoneNumber(phoneNumberInput.getText())) {
-                saveToDatabase();
+        if (isInputValid() && validateEmail(emailInput.getText()) && validatePhoneNumber(phoneNumberInput.getText())) {
+            if (editingClient == null) {
+                saveToDatabase(true);
+            } else {
+                saveToDatabase(false);
             }
-        } else {
-            System.out.println("Validation failed");
         }
     }
 
-    private void saveToDatabase(){
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        String sql = "INSERT INTO clients (first_name, last_name, email, phone_number, reference, citizenship, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private void saveToDatabase(boolean isNew) {
+        String sql;
+        if (isNew) {
+            sql = "INSERT INTO clients (first_name, last_name, email, phone_number, reference, citizenship, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        } else {
+            sql = "UPDATE clients SET first_name = ?, last_name = ?, email = ?, phone_number = ?, reference = ?, citizenship = ?, notes = ?, date = ? WHERE client_id = ?";
+        }
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = new DatabaseConnection().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, capitalize(firstNameInput.getText().trim()));
@@ -107,17 +143,29 @@ public class AddClientController {
             pstmt.setString(7, notesInput.getText().trim());
             pstmt.setDate(8, java.sql.Date.valueOf(LocalDate.now()));
 
+            if (!isNew) {
+                pstmt.setInt(9, editingClient.getId()); // Assuming Client has an ID field
+            }
+
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                showAlert("Client added successfully!", Alert.AlertType.INFORMATION);
-                clearForm();
+                showAlert("Client " + (isNew ? "added" : "updated") + " successfully!", Alert.AlertType.INFORMATION);
+                if (!isNew) {
+                    closeStage();
+                } else {
+                    clearForm();
+                }
             } else {
-                showAlert("No customer was added, please try again.", Alert.AlertType.ERROR);
+                showAlert("No changes were made.", Alert.AlertType.ERROR);
             }
         } catch (SQLException e) {
-            System.out.println("SQL Error: " + e.getMessage());
-            showAlert("Error while saving to the database: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Database error: " + e.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    private void closeStage() {
+        Stage stage = (Stage) firstNameInput.getScene().getWindow();
+        stage.close();
     }
 
     private String capitalize(String name) {

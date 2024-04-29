@@ -1,8 +1,11 @@
 package com.satveerbrar.crm;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Client {
+
+    private final SimpleIntegerProperty id;
     private final SimpleStringProperty firstName;
     private final SimpleStringProperty lastName;
     private final SimpleStringProperty email;
@@ -12,7 +15,8 @@ public class Client {
     private final SimpleStringProperty date;
     private final SimpleStringProperty notes;
 
-    public Client(String firstName, String lastName, String email, String phoneNumber, String reference, String citizenship, String date, String notes) {
+    public Client(int id, String firstName, String lastName, String email, String phoneNumber, String reference, String citizenship, String date, String notes) {
+        this.id = new SimpleIntegerProperty(id);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.email = new SimpleStringProperty(email);
@@ -21,6 +25,18 @@ public class Client {
         this.citizenship = new SimpleStringProperty(citizenship);
         this.date = new SimpleStringProperty(date);
         this.notes = new SimpleStringProperty(notes);
+    }
+
+    public int getId() {
+        return id.get();
+    }
+
+    public SimpleIntegerProperty idProperty() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id.set(id);
     }
 
     public String getFirstName() {
