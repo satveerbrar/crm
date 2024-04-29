@@ -7,18 +7,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ResourceBundle;
 
 public class ViewClientsController implements Initializable {
@@ -115,8 +110,36 @@ public class ViewClientsController implements Initializable {
     }
 
     private void deleteClient(Client client) {
-        clientsTable.getItems().remove(client);
-        //pending work for delete
+        if (client == null || client.getId() == 0) {
+            showAlert("No client selected to delete!", Alert.AlertType.ERROR);
+            return;
+        }
+
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this client?", ButtonType.YES, ButtonType.NO);
+        confirmationAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                executeDelete(client);
+            }
+        });
+    }
+
+    private void executeDelete(Client client) {
+        String sql = "DELETE FROM clients WHERE client_id = ?";
+
+        try (Connection conn = new DatabaseConnection().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, client.getId());
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                showAlert("Client deleted successfully!", Alert.AlertType.INFORMATION);
+                clientsTable.getItems().remove(client);
+            } else {
+                showAlert("No client was deleted. Please try again.", Alert.AlertType.ERROR);
+            }
+        } catch (SQLException e) {
+            showAlert("Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
     private void loadClientData() {
         ObservableList<Client> clients = FXCollections.observableArrayList();
@@ -143,5 +166,13 @@ public class ViewClientsController implements Initializable {
             System.out.println("Error fetching clients: " + e.getMessage());
         }
         clientsTable.setItems(clients);
+    }
+
+    private void showAlert(String message, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(alertType.toString());
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
