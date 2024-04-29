@@ -11,11 +11,10 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class AddCustomerController implements Initializable {
+public class AddClientController implements Initializable {
 
     @FXML
     private TextField firstNameInput;

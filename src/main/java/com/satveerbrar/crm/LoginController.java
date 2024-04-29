@@ -66,7 +66,7 @@ public class LoginController implements Initializable {
             while (queryResult.next()){
                 if(queryResult.getInt(1) == 1){
                     loginButton.getScene().getWindow().hide();
-                    FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("sidebar.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("home.fxml"));
                     Scene scene = new Scene(fxmlLoader.load(), 1200, 720);
                     Stage stage = new Stage();
                     stage.setTitle("Home");

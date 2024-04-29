@@ -3,15 +3,13 @@ package com.satveerbrar.crm;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class SideBarController {
+public class HomeController {
 
     @FXML
     private BorderPane bp;
@@ -36,23 +34,23 @@ public class SideBarController {
     }
 
     @FXML
-    private void addCustomer(MouseEvent event){
-        loadPage("addCustomer");
+    private void addClient(MouseEvent event){
+        loadPage("addClient");
     }
 
     @FXML
-    private void editCustomer(MouseEvent event){
-        loadPage("editCustomer");
+    private void addApplication(MouseEvent event){
+        loadPage("addApplication");
     }
 
     @FXML
-    private void deleteCustomer(MouseEvent event){
-        loadPage("deleteCustomer");
+    private void viewApplications(MouseEvent event){
+        loadPage("viewApplications");
     }
 
     @FXML
-    private void viewCustomers(MouseEvent event){
-        loadPage("viewCustomers");
+    private void viewClients(MouseEvent event){
+        loadPage("viewClients");
     }
 
 
