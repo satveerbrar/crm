@@ -104,4 +104,14 @@ public class ApplicationClient {
     public void setNotes(String notes) {
         this.notes.set(notes);
     }
+
+    public boolean matchesSearch(String searchText){
+        return getFirstName().toLowerCase().contains(searchText.toLowerCase()) ||
+                getLastName().toLowerCase().contains(searchText.toLowerCase()) ||
+                getApplicationType().toLowerCase().contains(searchText.toLowerCase()) ||
+                getApplicationStatus().toLowerCase().contains(searchText.toLowerCase()) ||
+                getSubmissionDate().contains(searchText) ||
+                getPriority().toLowerCase().contains(searchText.toLowerCase()) ||
+                (getNotes() != null && getNotes().toLowerCase().contains(searchText.toLowerCase()));
+    }
 }

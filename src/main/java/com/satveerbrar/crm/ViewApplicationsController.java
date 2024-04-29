@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
@@ -40,6 +41,10 @@ public class ViewApplicationsController implements Initializable {
     @FXML
     private TableColumn<ApplicationClient, String> colNotes;
 
+    @FXML
+    private TextField searchField;
+
+    ObservableList<ApplicationClient> applications = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -51,11 +56,30 @@ public class ViewApplicationsController implements Initializable {
         colPriority.setCellValueFactory(new PropertyValueFactory<>("Priority"));
         colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
 
+        setupSearch();
         loadApplicationData();
     }
 
+    private void setupSearch(){
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> filterApplications(newVal));
+    }
+
+    private void filterApplications(String searchText){
+        if(searchText == null || searchText.isEmpty()){
+            applicationsTable.setItems(applications);
+        }
+        else{
+            ObservableList<ApplicationClient> filteredList = FXCollections.observableArrayList();
+            for (ApplicationClient applicationClient : applications){
+                if(applicationClient.matchesSearch(searchText)){
+                    filteredList.add(applicationClient);
+                }
+                applicationsTable.setItems(filteredList);
+            }
+        }
+    }
+
     private void loadApplicationData() {
-        ObservableList<ApplicationClient> applications = FXCollections.observableArrayList();
         DatabaseConnection dbConnection = new DatabaseConnection();
         Connection conn = dbConnection.getConnection();
 
