@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -7,10 +6,19 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="bp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.satveerbrar.crm.SideBarController">
+<BorderPane fx:id="bp" minHeight="720.0" minWidth="1200.0" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.satveerbrar.crm.SideBarController">
    <left>
       <AnchorPane prefHeight="720.0" prefWidth="293.0" styleClass="sidebar" stylesheets="@stylesheet.css" BorderPane.alignment="CENTER">
          <children>
+            <Label layoutX="93.0" layoutY="64.0" style="-fx-background-color: #ffffff;">
+               <graphic>
+                  <ImageView fitHeight="95.0" fitWidth="89.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/icons/logo.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Label>
             <Label alignment="CENTER" layoutX="37.0" layoutY="257.0" onMouseClicked="#homePage" prefHeight="38.0" prefWidth="219.0" styleClass="navbtn" stylesheets="@stylesheet.css" text="Home">
                <graphic>
                   <ImageView fitHeight="18.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
@@ -71,19 +79,11 @@
                   <Font size="18.0" />
                </font>
             </Label>
-            <Label layoutX="93.0" layoutY="64.0" style="-fx-background-color: #ffffff;">
-               <graphic>
-                  <ImageView fitHeight="95.0" fitWidth="89.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@images/icons/logo.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Label>
          </children>
       </AnchorPane>
    </left>
    <center>
-      <AnchorPane fx:id="ap" prefHeight="720.0" prefWidth="490.0" BorderPane.alignment="CENTER" />
+      <AnchorPane fx:id="ap" minHeight="0.0" minWidth="0.0" prefHeight="720.0" prefWidth="${1200 - 293}" BorderPane.alignment="CENTER">
+      </AnchorPane>
    </center>
 </BorderPane>

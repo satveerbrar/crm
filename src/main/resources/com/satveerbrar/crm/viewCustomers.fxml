@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.satveerbrar.crm.ViewCustomersController"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1200.0" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.satveerbrar.crm.ViewCustomersController">
+    <center>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="907.0" BorderPane.alignment="CENTER">
+            <children>
+                <TableView fx:id="clientsTable" layoutX="60.0" layoutY="98.0" prefHeight="486.0" prefWidth="795.0" AnchorPane.bottomAnchor="136.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="98.0">
+                    <columns>
+                        <TableColumn fx:id="colFirstName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="FIRST_NAME" />
+                        <TableColumn fx:id="colLastName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="LAST_NAME" />
+                        <TableColumn fx:id="colEmail" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="EMAIL" />
+                        <TableColumn fx:id="colPhoneNumber" maxWidth="128.0" minWidth="120.0" prefWidth="-1.0" text="PHONE_NUMBER" />
+                        <TableColumn fx:id="colReference" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="REFERENCE" />
+                        <TableColumn fx:id="colCitizenship" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="CITIZENSHIP" />
+                        <TableColumn fx:id="colApplicationType" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="APPLICATION_TYPE" />
+                        <TableColumn fx:id="colDate" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="DATE" />
+                        <TableColumn fx:id="colNotes" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="NOTES" />
+                    </columns>
+                </TableView>
+                <TextField layoutX="537.0" layoutY="36.0" prefHeight="31.0" prefWidth="233.0" promptText="search">
+                    <font>
+                        <Font size="15.0" />
+                    </font>
+                </TextField>
+                <Label layoutX="210.0" layoutY="37.0" prefHeight="28.0" prefWidth="122.0" text="All Clients">
+                    <font>
+                        <Font name="Times New Roman Bold" size="24.0" />
+                    </font>
+                </Label>
+            </children>
+        </AnchorPane>
+    </center>
+</BorderPane>
