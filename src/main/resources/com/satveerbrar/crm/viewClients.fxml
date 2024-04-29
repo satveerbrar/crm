@@ -20,7 +20,6 @@
                         <TableColumn fx:id="colPhoneNumber" maxWidth="128.0" minWidth="120.0" prefWidth="-1.0" text="PHONE_NUMBER" />
                         <TableColumn fx:id="colReference" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="REFERENCE" />
                         <TableColumn fx:id="colCitizenship" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="CITIZENSHIP" />
-                        <TableColumn fx:id="colApplicationType" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="APPLICATION_TYPE" />
                         <TableColumn fx:id="colDate" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="DATE" />
                         <TableColumn fx:id="colNotes" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="NOTES" />
                     </columns>

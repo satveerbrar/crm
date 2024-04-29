@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class AddClientController implements Initializable {
+public class AddClientController {
 
     @FXML
     private TextField firstNameInput;
@@ -37,13 +37,6 @@ public class AddClientController implements Initializable {
     @FXML
     private TextArea notesInput;
 
-    @FXML
-    private ChoiceBox<String> applicationTypeChoiceBox;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        applicationTypeChoiceBox.getItems().addAll("Visitor Visa", "Study Permit", "Work Permit", "Permanent Residency", "Citizenship", "Other");
-    }
 
     private boolean validateEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
@@ -82,10 +75,6 @@ public class AddClientController implements Initializable {
             showAlert("Please enter phone number", Alert.AlertType.ERROR);
             phoneNumberInput.requestFocus();
             return false;
-        }else if(applicationTypeChoiceBox.getValue() == null){
-            showAlert("Please select application type", Alert.AlertType.ERROR);
-            applicationTypeChoiceBox.requestFocus();
-            return false;
         }
         return true;
     }
@@ -104,7 +93,7 @@ public class AddClientController implements Initializable {
 
     private void saveToDatabase(){
         DatabaseConnection dbConnection = new DatabaseConnection();
-        String sql = "INSERT INTO clients (first_name, last_name, email, phone_number, reference, citizenship, notes, application_type, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO clients (first_name, last_name, email, phone_number, reference, citizenship, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -116,8 +105,7 @@ public class AddClientController implements Initializable {
             pstmt.setString(5, capitalize(referenceInput.getText().trim()));
             pstmt.setString(6, capitalize(citizenshipInput.getText().trim()));
             pstmt.setString(7, notesInput.getText().trim());
-            pstmt.setString(8, applicationTypeChoiceBox.getValue());
-            pstmt.setDate(9, java.sql.Date.valueOf(LocalDate.now()));
+            pstmt.setDate(8, java.sql.Date.valueOf(LocalDate.now()));
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -147,7 +135,6 @@ public class AddClientController implements Initializable {
         referenceInput.setText("");
         citizenshipInput.setText("");
         notesInput.setText("");
-        applicationTypeChoiceBox.setValue(null);
     }
 
     private void showAlert(String message, Alert.AlertType alertType) {

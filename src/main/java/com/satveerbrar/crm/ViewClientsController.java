@@ -30,8 +30,6 @@ public class ViewClientsController implements Initializable {
     @FXML
     private TableColumn<Client, String> colCitizenship;
     @FXML
-    private TableColumn<Client, String> colApplicationType;
-    @FXML
     private TableColumn<Client, String> colDate;
     @FXML
     private TableColumn<Client, String> colNotes;
@@ -45,7 +43,6 @@ public class ViewClientsController implements Initializable {
         colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("PhoneNumber"));
         colReference.setCellValueFactory(new PropertyValueFactory<>("Reference"));
         colCitizenship.setCellValueFactory(new PropertyValueFactory<>("Citizenship"));
-        colApplicationType.setCellValueFactory(new PropertyValueFactory<>("ApplicationType"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("Date"));
         colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
 
@@ -68,7 +65,6 @@ public class ViewClientsController implements Initializable {
                         rs.getString("PHONE_NUMBER"),
                         rs.getString("REFERENCE"),
                         rs.getString("CITIZENSHIP"),
-                        rs.getString("APPLICATION_TYPE"),
                         rs.getString("DATE"),
                         rs.getString("NOTES")
                 ));

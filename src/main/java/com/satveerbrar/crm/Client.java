@@ -9,18 +9,16 @@ public class Client {
     private final SimpleStringProperty phoneNumber;
     private final SimpleStringProperty reference;
     private final SimpleStringProperty citizenship;
-    private final SimpleStringProperty applicationType;
     private final SimpleStringProperty date;
     private final SimpleStringProperty notes;
 
-    public Client(String firstName, String lastName, String email, String phoneNumber, String reference, String citizenship, String applicationType, String date, String notes) {
+    public Client(String firstName, String lastName, String email, String phoneNumber, String reference, String citizenship, String date, String notes) {
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.email = new SimpleStringProperty(email);
         this.phoneNumber = new SimpleStringProperty(phoneNumber);
         this.reference = new SimpleStringProperty(reference);
         this.citizenship = new SimpleStringProperty(citizenship);
-        this.applicationType = new SimpleStringProperty(applicationType);
         this.date = new SimpleStringProperty(date);
         this.notes = new SimpleStringProperty(notes);
     }
@@ -95,18 +93,6 @@ public class Client {
 
     public void setCitizenship(String citizenship) {
         this.citizenship.set(citizenship);
-    }
-
-    public String getApplicationType() {
-        return applicationType.get();
-    }
-
-    public SimpleStringProperty applicationTypeProperty() {
-        return applicationType;
-    }
-
-    public void setApplicationType(String applicationType) {
-        this.applicationType.set(applicationType);
     }
 
     public String getDate() {
