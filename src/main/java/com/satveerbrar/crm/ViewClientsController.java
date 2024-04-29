@@ -39,6 +39,10 @@ public class ViewClientsController implements Initializable {
     private TableColumn<Client, Void> colEdit;
     @FXML
     private TableColumn<Client, Void> colDelete;
+    @FXML
+    private TextField searchField;
+
+    ObservableList<Client> clients = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -51,6 +55,7 @@ public class ViewClientsController implements Initializable {
         colDate.setCellValueFactory(new PropertyValueFactory<>("Date"));
         colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
 
+        setupSearch();
         loadClientData();
         setupEditButton();
         setupDeleteButton();
@@ -141,8 +146,28 @@ public class ViewClientsController implements Initializable {
             showAlert("Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
+
+    private void setupSearch() {
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> filterClients(newVal));
+    }
+
+    private void filterClients(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            clientsTable.setItems(clients);
+        } else {
+            ObservableList<Client> filteredList = FXCollections.observableArrayList();
+            for (Client client : clients) {
+                if (client.matchesSearch(searchText)) {
+                    filteredList.add(client);
+                }
+            }
+            clientsTable.setItems(filteredList);
+        }
+    }
+
+
+
     private void loadClientData() {
-        ObservableList<Client> clients = FXCollections.observableArrayList();
         DatabaseConnection dbConnection = new DatabaseConnection();
         Connection conn = dbConnection.getConnection();
 

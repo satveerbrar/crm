@@ -134,4 +134,15 @@ public class Client {
     public void setNotes(String notes) {
         this.notes.set(notes);
     }
+
+    public boolean matchesSearch(String searchText) {
+        return getFirstName().toLowerCase().contains(searchText.toLowerCase()) ||
+                getLastName().toLowerCase().contains(searchText.toLowerCase()) ||
+                getEmail().toLowerCase().contains(searchText.toLowerCase()) ||
+                getPhoneNumber().contains(searchText) ||
+                getReference().toLowerCase().contains(searchText.toLowerCase()) ||
+                getCitizenship().toLowerCase().contains(searchText.toLowerCase()) ||
+                getDate().contains(searchText) ||
+                (getNotes() != null && getNotes().toLowerCase().contains(searchText.toLowerCase()));
+    }
 }
