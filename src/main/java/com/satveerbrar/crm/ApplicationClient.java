@@ -1,8 +1,11 @@
 package com.satveerbrar.crm;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class ApplicationClient {
+
+    private final SimpleIntegerProperty id;
     private final SimpleStringProperty firstName;
     private final SimpleStringProperty lastName;
     private final SimpleStringProperty applicationType;
@@ -11,7 +14,8 @@ public class ApplicationClient {
     private final SimpleStringProperty priority;
     private final SimpleStringProperty notes;
 
-    public ApplicationClient(String firstName, String lastName, String applicationType, String applicationStatus, String submissionDate, String priority , String notes){
+    public ApplicationClient(int id, String firstName, String lastName, String applicationType, String applicationStatus, String submissionDate, String priority , String notes){
+        this.id = new SimpleIntegerProperty(id);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.applicationType = new SimpleStringProperty(applicationType);
@@ -19,6 +23,22 @@ public class ApplicationClient {
         this.submissionDate = new SimpleStringProperty(submissionDate);
         this.priority = new SimpleStringProperty(priority);
         this.notes = new SimpleStringProperty(notes);
+    }
+
+    public int getId() {
+        return id.get();
+    }
+
+    public SimpleIntegerProperty idProperty() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id.set(id);
+    }
+
+    public void setSubmissionDate(String submissionDate) {
+        this.submissionDate.set(submissionDate);
     }
 
     public String getFirstName() {

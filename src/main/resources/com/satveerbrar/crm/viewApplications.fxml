@@ -21,6 +21,8 @@
                         <TableColumn fx:id="colSubmissionDate" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="DATE" />
                         <TableColumn fx:id="colPriority" maxWidth="115.0" minWidth="95.0" prefWidth="95.0" text="PRIORITY" />
                         <TableColumn fx:id="colNotes" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="NOTES" />
+                        <TableColumn fx:id="colEdit" prefWidth="75.0" text="Edit" />
+                        <TableColumn fx:id="colDelete" prefWidth="75.0" text="Delete" />
                     </columns>
                 </TableView>
                 <TextField fx:id="searchField" layoutX="537.0" layoutY="36.0" prefHeight="31.0" prefWidth="233.0" promptText="search">

@@ -3,10 +3,8 @@ package com.satveerbrar.crm;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -16,7 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class AddApplicationController implements Initializable {
+public class AddEditApplicationController implements Initializable {
 
     @FXML
     private TextField clientId;
@@ -30,18 +28,48 @@ public class AddApplicationController implements Initializable {
     private TextArea notesInput;
 
     @FXML
+    private Label headerLabel;
+
+    private ApplicationClient editingApplicationClient;
+
+    @FXML
     public void submitForm(ActionEvent actionEvent) {
         if(validateInputs()){
-            if(saveToDatabase()){
-                showAlert("Application saved successfully.", Alert.AlertType.INFORMATION);
-                clearForm();
+            if(editingApplicationClient == null){
+                saveToDatabase(true);
+            }else{
+                saveToDatabase(false);
             }
+
         } else {
             System.out.println("Validation failed");
         }
     }
 
+    public void setEditingApplicationClient(ApplicationClient applicationClient) {
+        this.editingApplicationClient = applicationClient;
+        if (applicationClient != null) {
+            initializeFormWithClientData();
+            headerLabel.setText("Edit Existing Client");
+        } else {
+            headerLabel.setText("Add New Client");
+        }
+    }
+
+    private void initializeFormWithClientData() {
+        clientId.setDisable(true);
+        applicationTypeChoiceBox.setValue(editingApplicationClient.getApplicationType());
+        applicationStatusChoiceBox.setValue(editingApplicationClient.getApplicationStatus());
+        priorityChoiceBox.setValue(editingApplicationClient.getPriority());
+        notesInput.setText(editingApplicationClient.getNotes());
+    }
+
     public boolean validateClientId(String clientId){
+
+        if(editingApplicationClient != null){
+            return true;
+        }
+
         int clientIdInt;
 
         if(clientId.isEmpty()){
@@ -129,9 +157,16 @@ public class AddApplicationController implements Initializable {
         priorityChoiceBox.getItems().addAll("Low", "Medium", "High");
         priorityChoiceBox.setValue("Select Priority");
     }
-    private boolean saveToDatabase() {
+    private void saveToDatabase(boolean isNew) {
+        String sql;
+        if(isNew){
+            sql = "INSERT INTO applications (application_type, application_status, priority, submission_date, notes, client_id ) VALUES (?, ?, ?, ?, ?, ?)";
+        }
+        else{
+            sql = "UPDATE applications SET application_type = ?, application_status = ?, priority = ?, submission_date = ?, notes = ? WHERE application_id = ?";
+        }
         DatabaseConnection dbConnection = new DatabaseConnection();
-        String sql = "INSERT INTO applications (application_type, application_status, priority, submission_date, notes, client_id ) VALUES (?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -140,18 +175,36 @@ public class AddApplicationController implements Initializable {
             pstmt.setString(3, priorityChoiceBox.getValue());
             pstmt.setDate(4,java.sql.Date.valueOf(LocalDate.now()));
             pstmt.setString(5, notesInput.getText());
-            pstmt.setInt(6, Integer.parseInt(clientId.getText().trim()));
+            if(!isNew){
+                pstmt.setInt(6, editingApplicationClient.getId());
+            }else{
+                pstmt.setInt(6, Integer.parseInt(clientId.getText().trim()));
+            }
+
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+            if (affectedRows > 0) {
+                showAlert("Application " + (isNew ? "added" : "updated") + " successfully!", Alert.AlertType.INFORMATION);
+                if (!isNew) {
+                    closeStage();
+                } else {
+                    clearForm();
+                }
+            } else {
+                showAlert("No changes were made.", Alert.AlertType.ERROR);
+            }
 
         } catch (SQLException e) {
             System.out.println("SQL Error: " + e.getMessage());
             showAlert("Error while saving to database: " + e.getMessage(), Alert.AlertType.ERROR);
-            return false;
+
         } catch (NumberFormatException e) {
             showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
-            return false;
         }
+    }
+
+    private void closeStage() {
+        Stage stage = (Stage) applicationTypeChoiceBox.getScene().getWindow();
+        stage.close();
     }
 }
