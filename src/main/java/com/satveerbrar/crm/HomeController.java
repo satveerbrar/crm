@@ -52,6 +52,7 @@ public class HomeController implements Initializable {
 
     @FXML
     private void homePage(MouseEvent event){
+        loadDashboards();
         bp.setCenter(ap);
     }
 
