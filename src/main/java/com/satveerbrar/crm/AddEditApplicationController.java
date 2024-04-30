@@ -19,6 +19,10 @@ public class AddEditApplicationController implements Initializable {
     @FXML
     private TextField clientId;
     @FXML
+    private TextField nameField;
+    @FXML
+    private TextField emailField;
+    @FXML
     private ChoiceBox<String> applicationTypeChoiceBox;
     @FXML
     private ChoiceBox<String> applicationStatusChoiceBox;
@@ -114,6 +118,43 @@ public class AddEditApplicationController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeChoiceBoxes();
+        setupClientIdChangeListener();
+    }
+
+    private void setupClientIdChangeListener() {
+        clientId.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.trim().isEmpty()) {
+                updatePromptTexts(newValue.trim());
+            }
+        });
+    }
+
+    private void updatePromptTexts(String clientId) {
+        DatabaseConnection dbConnection = new DatabaseConnection();
+        String sql = "SELECT first_name, last_name, email FROM clients WHERE client_id = ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, Integer.parseInt(clientId));
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("email");
+
+                nameField.setPromptText(firstName.isEmpty() ? "name" : firstName + " " + lastName);
+                emailField.setPromptText(email.isEmpty() ? "email" : email);
+            } else {
+                nameField.setPromptText("name");
+                emailField.setPromptText("email");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+            showAlert("Error fetching client details: " + e.getMessage(), Alert.AlertType.ERROR);
+        } catch (NumberFormatException e) {
+            showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
+        }
     }
 
     private boolean validateInputs() {
