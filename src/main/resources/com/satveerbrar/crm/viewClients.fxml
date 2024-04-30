@@ -14,6 +14,7 @@
             <children>
                 <TableView fx:id="clientsTable" layoutX="60.0" layoutY="98.0" prefHeight="486.0" prefWidth="795.0" AnchorPane.bottomAnchor="136.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="98.0">
                     <columns>
+                  <TableColumn fx:id="colClientId" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="CLIENT_ID" />
                         <TableColumn fx:id="colFirstName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="FIRST_NAME" />
                         <TableColumn fx:id="colLastName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="LAST_NAME" />
                         <TableColumn fx:id="colEmail" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="EMAIL" />

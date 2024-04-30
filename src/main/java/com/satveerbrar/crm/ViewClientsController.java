@@ -19,6 +19,9 @@ import java.util.ResourceBundle;
 public class ViewClientsController implements Initializable {
     @FXML
     private TableView<Client> clientsTable;
+
+    @FXML
+    private TableColumn<Client, Integer> colClientId;
     @FXML
     private TableColumn<Client, String> colFirstName;
     @FXML
@@ -46,6 +49,7 @@ public class ViewClientsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        colClientId.setCellValueFactory(new PropertyValueFactory<>("Id"));
         colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
         colLastName.setCellValueFactory(new PropertyValueFactory<>("LastName"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
