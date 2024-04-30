@@ -84,7 +84,105 @@
       </AnchorPane>
    </left>
    <center>
-      <AnchorPane fx:id="ap" minHeight="0.0" minWidth="0.0" prefHeight="720.0" prefWidth="907" BorderPane.alignment="CENTER">
-      </AnchorPane>
+      <AnchorPane fx:id="ap" minHeight="0.0" minWidth="0.0" prefHeight="720.0" prefWidth="907" style="-fx-background-radius: 10;" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane layoutX="91.0" layoutY="257.0" prefHeight="314.0" prefWidth="738.0" style="-fx-background-color: #f5f5f5; -fx-background-radius: 10;">
+               <children>
+                  <AnchorPane layoutX="14.0" layoutY="16.0" prefHeight="110.0" prefWidth="200.0" style="-fx-background-radius: 15; -fx-background-color: #222423;">
+                     <children>
+                        <Label layoutX="19.0" layoutY="14.0" prefHeight="31.0" prefWidth="167.0" style="-fx-text-fill: #ffffff;" text="Total Applications" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalApplicationsLabel" alignment="CENTER" layoutX="19.0" layoutY="69.0" prefHeight="30.0" prefWidth="134.0" style="-fx-text-fill: #ffffff;" text="150" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="263.0" layoutY="16.0" prefHeight="110.0" prefWidth="200.0" style="-fx-background-radius: 15; -fx-background-color: #222423;">
+                     <children>
+                        <Label layoutX="19.0" layoutY="14.0" prefHeight="31.0" prefWidth="167.0" style="-fx-text-fill: #ffffff;" text="Not Started" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalNotStartedLabel" alignment="CENTER" layoutX="19.0" layoutY="69.0" prefHeight="30.0" prefWidth="134.0" style="-fx-text-fill: #ffffff;" text="150" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="499.0" layoutY="16.0" prefHeight="110.0" prefWidth="200.0" style="-fx-background-radius: 15; -fx-background-color: #222423;">
+                     <children>
+                        <Label layoutX="19.0" layoutY="14.0" prefHeight="31.0" prefWidth="167.0" style="-fx-text-fill: #ffffff;" text="In Progress" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalInProgressLabel" alignment="CENTER" layoutX="19.0" layoutY="69.0" prefHeight="30.0" prefWidth="134.0" style="-fx-text-fill: #ffffff;" text="150" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="155.0" prefHeight="110.0" prefWidth="200.0" style="-fx-background-radius: 15; -fx-background-color: #222423;">
+                     <children>
+                        <Label layoutX="19.0" layoutY="14.0" prefHeight="31.0" prefWidth="167.0" style="-fx-text-fill: #ffffff;" text="Approved" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalApprovedLabel" alignment="CENTER" layoutX="19.0" layoutY="69.0" prefHeight="30.0" prefWidth="134.0" style="-fx-text-fill: #ffffff;" text="150" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="263.0" layoutY="157.0" prefHeight="110.0" prefWidth="200.0" style="-fx-background-radius: 15; -fx-background-color: #222423;">
+                     <children>
+                        <Label layoutX="19.0" layoutY="14.0" prefHeight="31.0" prefWidth="167.0" style="-fx-text-fill: #ffffff;" text="Rejected" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalRejectedLabel" alignment="CENTER" layoutX="19.0" layoutY="69.0" prefHeight="30.0" prefWidth="134.0" style="-fx-text-fill: #ffffff;" text="150" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <Label layoutX="332.0" layoutY="22.0" prefHeight="30.0" prefWidth="210.0" text="Dashboards">
+               <font>
+                  <Font name="Times New Roman Bold" size="27.0" />
+               </font>
+            </Label>
+            <AnchorPane layoutX="91.0" layoutY="77.0" prefHeight="153.0" prefWidth="735.0" style="-fx-background-color: #f5f5f5; -fx-background-radius: 10;">
+               <children>
+                  <AnchorPane layoutX="14.0" layoutY="25.0" prefHeight="110.0" prefWidth="200.0" style="-fx-background-radius: 15; -fx-background-color: #222423;">
+                     <children>
+                        <Label layoutX="19.0" layoutY="14.0" prefHeight="31.0" prefWidth="167.0" style="-fx-text-fill: #ffffff;" text="Total Clients" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalClientsLabel" alignment="CENTER" layoutX="19.0" layoutY="69.0" prefHeight="30.0" prefWidth="134.0" style="-fx-text-fill: #ffffff;" text="150" textFill="WHITE">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children></AnchorPane>
    </center>
 </BorderPane>
