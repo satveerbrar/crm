@@ -1,6 +1,7 @@
 package com.satveerbrar.crm;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class DatabaseConnection {
     private static final String DATABASE_PATH = "crm.db";
@@ -8,13 +9,15 @@ public class DatabaseConnection {
 
 
     public Connection getConnection(){
-
+        Connection conn = null;
         try {
-            Class.forName("org.sqlite.JDBC");
-            return DriverManager.getConnection(DATABASE_URL);
+            conn = DriverManager.getConnection(DATABASE_URL);
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("PRAGMA foreign_keys = ON");
+            }
         } catch (Exception e) {
             System.out.println("Connection failed: " + e.getMessage());
-            return null;
         }
+        return conn;
     }
 }

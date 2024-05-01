@@ -58,7 +58,7 @@ public class LoginController implements Initializable {
         DatabaseConnection connectNow = new DatabaseConnection();
         Connection connectDb = connectNow.getConnection();
 
-        String verifyLogin = "SELECT count(1) FROM user_account WHERE username = ? AND password = ?";
+        String verifyLogin = "SELECT count(1) FROM user_accounts WHERE username = ? AND password = ?";
 
         try (PreparedStatement statement = connectDb.prepareStatement(verifyLogin)) {
             statement.setString(1, usernameInput.getText());

@@ -19,14 +19,14 @@ public class DatabaseInitializer {
 
     private static void createTableUserAccount(Connection conn) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
-        ResultSet res = meta.getTables(null, null, "user_account", new String[] {"TABLE"});
+        ResultSet res = meta.getTables(null, null, "user_accounts", new String[]{"TABLE"});
         if (!res.next()) {
             System.out.println("Creating user_account table...");
             String sql = "CREATE TABLE IF NOT EXISTS user_accounts (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "firstname TEXT NOT NULL" +
-                    "lastname TEXT NOT NULL" +
-                    "username TEXT NOT NULL," +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "firstname TEXT NOT NULL, " +
+                    "lastname TEXT NOT NULL, " +
+                    "username TEXT NOT NULL, " +
                     "password TEXT NOT NULL);";
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
