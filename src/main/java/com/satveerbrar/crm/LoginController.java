@@ -1,9 +1,10 @@
 package com.satveerbrar.crm;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,35 +54,36 @@ public class LoginController implements Initializable {
         }
     }
 
-    public void validateLogin(){
+    public void validateLogin() {
         DatabaseConnection connectNow = new DatabaseConnection();
         Connection connectDb = connectNow.getConnection();
 
-        String verifyLogin = "SELECT count(1) FROM user_account WHERE username = '" + usernameInput.getText() + "' AND password = '" + passwordInput.getText() + "' ";
+        String verifyLogin = "SELECT count(1) FROM user_accounts WHERE username = ? AND password = ?";
 
-        try{
-            Statement statement = connectDb.createStatement();
-            ResultSet queryResult = statement.executeQuery(verifyLogin);
+        try (PreparedStatement statement = connectDb.prepareStatement(verifyLogin)) {
+            statement.setString(1, usernameInput.getText());
+            statement.setString(2, passwordInput.getText());
 
-            while (queryResult.next()){
-                if(queryResult.getInt(1) == 1){
-                    loginButton.getScene().getWindow().hide();
-                    FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("home.fxml"));
-                    Scene scene = new Scene(fxmlLoader.load(), 1200, 720);
-                    Stage stage = new Stage();
-                    stage.setTitle("Home");
-                    stage.setScene(scene);
-                    stage.show();
-                }
-                else{
-                    invalidLoginMessageLabel.setText("Invalid Login! Try again");
-                }
+            ResultSet queryResult = statement.executeQuery();
+
+            if (queryResult.next() && queryResult.getInt(1) == 1) {
+                transitionToHomePage();
+            } else {
+                invalidLoginMessageLabel.setText("Invalid Login! Try again");
             }
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            e.getCause();
         }
     }
 
-}
+    private void transitionToHomePage() throws IOException {
+        loginButton.getScene().getWindow().hide();
+        FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("home.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 720);
+        Stage stage = new Stage();
+        stage.setTitle("Home");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+ }

@@ -1,21 +1,23 @@
 package com.satveerbrar.crm;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class DatabaseConnection {
-    private static final String DATABASE_NAME = System.getenv("DB_NAME");
-    private static final String DATABASE_USER = System.getenv("DB_USER");
-    private static final String DATABASE_PASSWORD = System.getenv("DB_PASSWORD");
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/" + DATABASE_NAME;
+    private static final String DATABASE_PATH = "crm.db";
+    private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_PATH;
 
 
     public Connection getConnection(){
-
+        Connection conn = null;
         try {
-            return DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
+            conn = DriverManager.getConnection(DATABASE_URL);
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("PRAGMA foreign_keys = ON");
+            }
         } catch (Exception e) {
             System.out.println("Connection failed: " + e.getMessage());
         }
-        return null;
+        return conn;
     }
 }
