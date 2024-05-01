@@ -3,7 +3,7 @@ module com.satveerbrar.crm {
     requires javafx.fxml;
     requires javafx.graphics;
     requires java.sql;
-    requires mysql.connector.j;
+    requires org.xerial.sqlitejdbc;
 
 
     opens com.satveerbrar.crm to javafx.fxml;
