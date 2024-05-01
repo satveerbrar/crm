@@ -2,10 +2,7 @@ package com.satveerbrar.crm;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -43,11 +40,15 @@ public class AddEditClientController implements Initializable {
     @FXML
     private Label headerLabel;
 
+    @FXML
+    private Button clientSubmitButton;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (editingClient != null) {
             initializeFormWithClientData();
         }
+        ButtonUtils.setHoverCursor(clientSubmitButton);
     }
 
     public void setEditingClient(Client client) {

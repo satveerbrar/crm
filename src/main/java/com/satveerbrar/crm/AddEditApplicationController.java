@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class AddEditApplicationController implements Initializable {
-
     @FXML
     private TextField clientId;
     @FXML
@@ -30,9 +29,10 @@ public class AddEditApplicationController implements Initializable {
     private ChoiceBox<String> priorityChoiceBox;
     @FXML
     private TextArea notesInput;
-
     @FXML
     private Label headerLabel;
+    @FXML
+    private Button applicationSubmitButton;
 
     private ApplicationClient editingApplicationClient;
 
@@ -119,6 +119,7 @@ public class AddEditApplicationController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeChoiceBoxes();
         setupClientIdChangeListener();
+        ButtonUtils.setHoverCursor(applicationSubmitButton);
     }
 
     private void setupClientIdChangeListener() {

@@ -4,7 +4,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -19,6 +21,16 @@ import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
 
+    @FXML
+    private Label homeNavButton;
+    @FXML
+    private Label addClientNavButton;
+    @FXML
+    private Label addApplicationsNavButton;
+    @FXML
+    private Label viewApplicationNavButton;
+    @FXML
+    private Label viewClientsNavButton;
     @FXML
     private BorderPane bp;
     @FXML
@@ -79,6 +91,12 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        ButtonUtils.setHoverCursor(homeNavButton);
+        ButtonUtils.setHoverCursor(addClientNavButton);
+        ButtonUtils.setHoverCursor(addApplicationsNavButton);
+        ButtonUtils.setHoverCursor(viewApplicationNavButton);
+        ButtonUtils.setHoverCursor(viewClientsNavButton);
+        ButtonUtils.setHoverCursor(homeNavButton);
         loadDashboards();
     }
 

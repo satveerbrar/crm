@@ -60,7 +60,7 @@
                   <Font name="Arial" size="16.0" />
                </font>
             </Label>
-            <Button layoutX="394.0" layoutY="646.0" mnemonicParsing="false" onAction="#submitForm" prefHeight="36.0" prefWidth="183.0" style="-fx-background-color: #354ef0;" text="SUBMIT" textFill="WHITE">
+            <Button fx:id="clientSubmitButton" layoutX="394.0" layoutY="646.0" mnemonicParsing="false" onAction="#submitForm" prefHeight="36.0" prefWidth="183.0" style="-fx-background-color: #354ef0;" text="SUBMIT" textFill="WHITE">
                <effect>
                   <DropShadow />
                </effect>
