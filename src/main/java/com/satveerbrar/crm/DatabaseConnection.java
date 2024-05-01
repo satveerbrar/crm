@@ -1,6 +1,7 @@
 package com.satveerbrar.crm;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConnection {
@@ -15,8 +16,9 @@ public class DatabaseConnection {
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute("PRAGMA foreign_keys = ON");
             }
-        } catch (Exception e) {
-            System.out.println("Connection failed: " + e.getMessage());
+            Launcher.getLogger().info("Database connection established successfully");
+        } catch (SQLException e) {
+            Launcher.getLogger().error("Connection failed: {}", e.getMessage(), e);
         }
         return conn;
     }

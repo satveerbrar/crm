@@ -23,6 +23,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ButtonUtils.setHoverCursor(loginButton);
+        Launcher.getLogger().info("LoginController initialized");
     }
 
     @FXML
@@ -39,14 +40,18 @@ public class LoginController implements Initializable {
 
     @FXML
     public void handleLoginButtonAction(ActionEvent event) {
+        Launcher.getLogger().info("Login button clicked");
         invalidLoginMessageLabel.setText("Invalid Login. Please try again");
 
         if(usernameInput.getText().isBlank() && passwordInput.getText().isBlank()){
+            Launcher.getLogger().warn("Invalid login attempt. username and password blank");
             invalidLoginMessageLabel.setText("Please enter username and password");
         }else if(usernameInput.getText().isBlank()){
+            Launcher.getLogger().warn("Invalid login attempt. username blank");
            invalidLoginMessageLabel.setText("Please enter username");
         }
         else if(passwordInput.getText().isBlank()){
+            Launcher.getLogger().warn("Invalid login attempt. password blank");
             invalidLoginMessageLabel.setText("Please enter password");
         }
         else{
@@ -67,17 +72,20 @@ public class LoginController implements Initializable {
             ResultSet queryResult = statement.executeQuery();
 
             if (queryResult.next() && queryResult.getInt(1) == 1) {
+                Launcher.getLogger().info("Login validated for user: {}", usernameInput.getText());
                 transitionToHomePage();
             } else {
+                Launcher.getLogger().warn("Invalid login attempt for user: {}", usernameInput.getText());
                 invalidLoginMessageLabel.setText("Invalid Login! Try again");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Launcher.getLogger().error("Exception occurred during login validation: {}", e.getMessage(), e);
         }
     }
 
     private void transitionToHomePage() throws IOException {
         loginButton.getScene().getWindow().hide();
+        Launcher.getLogger().info("Loading home.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("home.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 720);
         Stage stage = new Stage();

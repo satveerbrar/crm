@@ -51,19 +51,22 @@ public class HomeController implements Initializable {
 
 
 
-    public void loadPage(String page)  {
-        Parent root = null;
+    public void loadPage(String page) {
         try {
-            root = FXMLLoader.load(getClass().getResource(page + ".fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(page + ".fxml"));
+            Parent root = loader.load();
+            Launcher.getLogger().info("Loading page: {}", page);
+            bp.setCenter(root);
         } catch (IOException e) {
+            Launcher.getLogger().error("Failed to load page {}: {}", page, e.getMessage(), e);
             throw new RuntimeException(e);
         }
-        bp.setCenter(root);
-
     }
+
 
     @FXML
     private void homePage(MouseEvent event){
+        Launcher.getLogger().info("Navigating to home page");
         loadDashboards();
         bp.setCenter(ap);
     }
@@ -98,6 +101,7 @@ public class HomeController implements Initializable {
         ButtonUtils.setHoverCursor(viewClientsNavButton);
         ButtonUtils.setHoverCursor(homeNavButton);
         loadDashboards();
+        Launcher.getLogger().info("HomeController initialized");
     }
 
     private void loadDashboards() {
@@ -110,7 +114,7 @@ public class HomeController implements Initializable {
             updateLabelWithCount(conn, "SELECT COUNT(*) FROM applications WHERE application_status = 'Approved'", totalApprovedLabel);
             updateLabelWithCount(conn, "SELECT COUNT(*) FROM applications WHERE application_status = 'Rejected'", totalRejectedLabel);
         } catch (SQLException e) {
-            e.printStackTrace();
+            Launcher.getLogger().error("Error executing SQL query: {}", e.getMessage(), e);
         }
     }
 
@@ -121,8 +125,9 @@ public class HomeController implements Initializable {
                 int count = rs.getInt(1);
                 label.setText(String.valueOf(count));
             }
+            Launcher.getLogger().info("Label update successfully {}", label);
         } catch (SQLException e) {
-            e.printStackTrace();
+            Launcher.getLogger().error("Error executing SQL query: {}", e.getMessage(), e);
             label.setText("Error");
         }
     }

@@ -67,6 +67,8 @@ public class ViewApplicationsController implements Initializable {
         loadApplicationData();
         setupEditButton();
         setupDeleteButton();
+
+        Launcher.getLogger().info("ViewApplicationsController initialized.");
     }
 
     private void setupEditButton() {
@@ -119,17 +121,18 @@ public class ViewApplicationsController implements Initializable {
             stage.setTitle("Edit Application");
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            Launcher.getLogger().error("Error while editing application: {}", e.getMessage());
         }
     }
 
     private void deleteApplication(ApplicationClient applicationClient) {
         if (applicationClient == null || applicationClient.getId() == 0) {
-            showAlert("No client selected to delete!", Alert.AlertType.ERROR);
+            showAlert("No application selected to delete!", Alert.AlertType.ERROR);
+            Launcher.getLogger().warn("No application selected to delete.");
             return;
         }
 
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this client?", ButtonType.YES, ButtonType.NO);
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this application?", ButtonType.YES, ButtonType.NO);
         confirmationAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 executeDelete(applicationClient);
@@ -148,11 +151,14 @@ public class ViewApplicationsController implements Initializable {
             if (affectedRows > 0) {
                 showAlert("Application deleted successfully!", Alert.AlertType.INFORMATION);
                 applicationsTable.getItems().remove(applicationClient);
+                Launcher.getLogger().info("Application deleted successfully.");
             } else {
                 showAlert("No application was deleted. Please try again.", Alert.AlertType.ERROR);
+                Launcher.getLogger().warn("No application was deleted.");
             }
         } catch (SQLException e) {
             showAlert("Error while deleting the application: " + e.getMessage(), Alert.AlertType.ERROR);
+            Launcher.getLogger().error("Error while deleting the application: {}", e.getMessage());
         }
     }
 
@@ -194,8 +200,10 @@ public class ViewApplicationsController implements Initializable {
                         rs.getString("NOTES")
                 ));
             }
+            Launcher.getLogger().info("Application data loaded successfully.");
         } catch (Exception e) {
-            System.out.println("Error fetching clients: " + e.getMessage());
+            System.out.println("Error fetching applications: " + e.getMessage());
+            Launcher.getLogger().error("Error fetching applications: {}", e.getMessage());
         }
         applicationsTable.setItems(applications);
     }
@@ -206,6 +214,6 @@ public class ViewApplicationsController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+        Launcher.getLogger().info("Alert shown: {}", message);
     }
 }
-
