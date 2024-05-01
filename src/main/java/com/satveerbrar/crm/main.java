@@ -14,7 +14,7 @@ public class main extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 765, 601);
-        primaryStage.setTitle("Probe Immigration");
+        primaryStage.setTitle("ATG Immigration");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
