@@ -63,6 +63,8 @@ public class ViewClientsController implements Initializable {
         loadClientData();
         setupEditButton();
         setupDeleteButton();
+
+        Launcher.getLogger().info("ViewClientsController initialized.");
     }
 
     private void setupEditButton() {
@@ -114,13 +116,14 @@ public class ViewClientsController implements Initializable {
             stage.setTitle("Edit Client");
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            Launcher.getLogger().error("Error while editing client: {}", e.getMessage());
         }
     }
 
     private void deleteClient(Client client) {
         if (client == null || client.getId() == 0) {
             showAlert("No client selected to delete!", Alert.AlertType.ERROR);
+            Launcher.getLogger().warn("No client selected to delete.");
             return;
         }
 
@@ -143,11 +146,14 @@ public class ViewClientsController implements Initializable {
             if (affectedRows > 0) {
                 showAlert("Client deleted successfully!", Alert.AlertType.INFORMATION);
                 clientsTable.getItems().remove(client);
+                Launcher.getLogger().info("Client deleted successfully.");
             } else {
                 showAlert("No client was deleted. Please try again.", Alert.AlertType.ERROR);
+                Launcher.getLogger().warn("No client was deleted.");
             }
         } catch (SQLException e) {
             showAlert("Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
+            Launcher.getLogger().error("Error while deleting the client: {}", e.getMessage());
         }
     }
 
@@ -169,8 +175,6 @@ public class ViewClientsController implements Initializable {
         }
     }
 
-
-
     private void loadClientData() {
         DatabaseConnection dbConnection = new DatabaseConnection();
         Connection conn = dbConnection.getConnection();
@@ -191,8 +195,10 @@ public class ViewClientsController implements Initializable {
                         rs.getString("NOTES")
                 ));
             }
+            Launcher.getLogger().info("Client data loaded successfully.");
         } catch (Exception e) {
             System.out.println("Error fetching clients: " + e.getMessage());
+            Launcher.getLogger().error("Error fetching clients: {}", e.getMessage());
         }
         clientsTable.setItems(clients);
     }
@@ -203,5 +209,6 @@ public class ViewClientsController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+        Launcher.getLogger().info("Alert shown: {}", message);
     }
 }

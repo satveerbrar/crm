@@ -46,7 +46,7 @@ public class AddEditApplicationController implements Initializable {
             }
 
         } else {
-            System.out.println("Validation failed");
+            Launcher.getLogger().warn("Validation failed");
         }
     }
 
@@ -84,7 +84,7 @@ public class AddEditApplicationController implements Initializable {
         try{
             clientIdInt = Integer.parseInt(clientId);
         }catch (NumberFormatException e){
-            System.out.println("Error while converting client_id to int" + e.getMessage());
+            Launcher.getLogger().error("Error while converting client_id to int", e);
             showAlert("Please enter valid client_id", Alert.AlertType.ERROR);
             return false;
         }
@@ -107,7 +107,7 @@ public class AddEditApplicationController implements Initializable {
             }
 
         }catch (SQLException e){
-            System.out.println("SQL Error: " + e.getMessage());
+            Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
             showAlert("Error while fetching client_id: " + e.getMessage(), Alert.AlertType.ERROR);
             return false;
         }
@@ -120,6 +120,7 @@ public class AddEditApplicationController implements Initializable {
         initializeChoiceBoxes();
         setupClientIdChangeListener();
         ButtonUtils.setHoverCursor(applicationSubmitButton);
+        Launcher.getLogger().info("AddEditApplicationController initialized.");
     }
 
     private void setupClientIdChangeListener() {
@@ -151,7 +152,7 @@ public class AddEditApplicationController implements Initializable {
             }
 
         } catch (SQLException e) {
-            System.out.println("SQL Error: " + e.getMessage());
+            Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
             showAlert("Error fetching client details: " + e.getMessage(), Alert.AlertType.ERROR);
         } catch (NumberFormatException e) {
             showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
@@ -203,8 +204,7 @@ public class AddEditApplicationController implements Initializable {
         String sql;
         if(isNew){
             sql = "INSERT INTO applications (application_type, application_status, priority, submission_date, notes, client_id ) VALUES (?, ?, ?, ?, ?, ?)";
-        }
-        else{
+        } else{
             sql = "UPDATE applications SET application_type = ?, application_status = ?, priority = ?, submission_date = ?, notes = ? WHERE application_id = ?";
         }
         DatabaseConnection dbConnection = new DatabaseConnection();
@@ -223,10 +223,9 @@ public class AddEditApplicationController implements Initializable {
                 pstmt.setInt(6, Integer.parseInt(clientId.getText().trim()));
             }
 
-
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                showAlert("Application " + (isNew ? "added" : "updated") + " successfully!", Alert.AlertType.INFORMATION);
+                Launcher.getLogger().info("Application " + (isNew ? "added" : "updated") + " successfully!");
                 if (!isNew) {
                     closeStage();
                 } else {
@@ -237,10 +236,11 @@ public class AddEditApplicationController implements Initializable {
             }
 
         } catch (SQLException e) {
-            System.out.println("SQL Error: " + e.getMessage());
+            Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
             showAlert("Error while saving to database: " + e.getMessage(), Alert.AlertType.ERROR);
 
         } catch (NumberFormatException e) {
+            Launcher.getLogger().error( "Invalid Client ID format.", e);
             showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
         }
     }

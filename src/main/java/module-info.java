@@ -4,6 +4,7 @@ module com.satveerbrar.crm {
     requires javafx.graphics;
     requires java.sql;
     requires org.xerial.sqlitejdbc;
+    requires org.apache.logging.log4j;
 
 
     opens com.satveerbrar.crm to javafx.fxml;

@@ -49,6 +49,7 @@ public class AddEditClientController implements Initializable {
             initializeFormWithClientData();
         }
         ButtonUtils.setHoverCursor(clientSubmitButton);
+        Launcher.getLogger().info("AddEditClientController initialized.");
     }
 
     public void setEditingClient(Client client) {
@@ -69,6 +70,7 @@ public class AddEditClientController implements Initializable {
         referenceInput.setText(editingClient.getReference());
         citizenshipInput.setText(editingClient.getCitizenship());
         notesInput.setText(editingClient.getNotes());
+        Launcher.getLogger().info("Form initialized with client data.");
     }
 
     private boolean validateEmail(String email) {
@@ -76,6 +78,7 @@ public class AddEditClientController implements Initializable {
         if(!email.matches(emailRegex)){
             showAlert("Invalid email", Alert.AlertType.ERROR);
             emailInput.requestFocus();
+            Launcher.getLogger().error("Invalid email entered: {}", email);
             return false;
         }
         return true;
@@ -86,6 +89,7 @@ public class AddEditClientController implements Initializable {
         if(!phoneNumber.matches(phoneRegex)){
             showAlert("Invalid Phone number", Alert.AlertType.ERROR);
             phoneNumberInput.requestFocus();
+            Launcher.getLogger().error("Invalid phone number entered: {}", phoneNumber);
             return false;
         }
         return true;
@@ -95,24 +99,26 @@ public class AddEditClientController implements Initializable {
         if (firstNameInput.getText().trim().isEmpty()){
             showAlert("Please enter first Name", Alert.AlertType.ERROR);
             firstNameInput.requestFocus();
+            Launcher.getLogger().error("First name is empty.");
             return false;
         }else if(lastNameInput.getText().trim().isEmpty()){
             showAlert("Please enter last Name", Alert.AlertType.ERROR);
             lastNameInput.requestFocus();
+            Launcher.getLogger().error("Last name is empty.");
             return false;
         }else if(emailInput.getText().trim().isEmpty()){
             showAlert("Please enter email", Alert.AlertType.ERROR);
             emailInput.requestFocus();
+            Launcher.getLogger().error("Email is empty.");
             return false;
         }else if(phoneNumberInput.getText().trim().isEmpty()){
             showAlert("Please enter phone number", Alert.AlertType.ERROR);
             phoneNumberInput.requestFocus();
+            Launcher.getLogger().error("Phone number is empty.");
             return false;
         }
         return true;
     }
-
-
 
     public void submitForm() {
         if (isInputValid() && validateEmail(emailInput.getText()) && validatePhoneNumber(phoneNumberInput.getText())) {
@@ -145,7 +151,7 @@ public class AddEditClientController implements Initializable {
             pstmt.setDate(8, java.sql.Date.valueOf(LocalDate.now()));
 
             if (!isNew) {
-                pstmt.setInt(9, editingClient.getId()); // Assuming Client has an ID field
+                pstmt.setInt(9, editingClient.getId());
             }
 
             int affectedRows = pstmt.executeUpdate();
@@ -156,17 +162,21 @@ public class AddEditClientController implements Initializable {
                 } else {
                     clearForm();
                 }
+                Launcher.getLogger().info("Client {} successfully.", isNew ? "added" : "updated");
             } else {
                 showAlert("No changes were made.", Alert.AlertType.ERROR);
+                Launcher.getLogger().warn("No changes were made.");
             }
         } catch (SQLException e) {
             showAlert("Database error: " + e.getMessage(), Alert.AlertType.ERROR);
+            Launcher.getLogger().error("Database error while saving client: {}", e.getMessage(), e);
         }
     }
 
     private void closeStage() {
         Stage stage = (Stage) firstNameInput.getScene().getWindow();
         stage.close();
+        Launcher.getLogger().info("Stage closed.");
     }
 
     private String capitalize(String name) {
@@ -184,6 +194,7 @@ public class AddEditClientController implements Initializable {
         referenceInput.setText("");
         citizenshipInput.setText("");
         notesInput.setText("");
+        Launcher.getLogger().info("Form cleared.");
     }
 
     private void showAlert(String message, Alert.AlertType alertType) {
@@ -192,6 +203,7 @@ public class AddEditClientController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+        Launcher.getLogger().info("Alert shown: {}", message);
     }
 
 }

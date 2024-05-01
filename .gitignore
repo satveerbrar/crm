@@ -38,3 +38,6 @@ build/
 
 ### Sqllite ###
 crm.db
+
+### Logs folder ###
+/logs

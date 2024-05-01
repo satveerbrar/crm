@@ -13,7 +13,7 @@ public class DatabaseInitializer {
                 createTableApplications(conn);
             }
         } catch (SQLException e) {
-            System.err.println("Error during database initialization: " + e.getMessage());
+            Launcher.getLogger().error("Error during database initialization: {}", e.getMessage(), e);
         }
     }
 
@@ -21,20 +21,25 @@ public class DatabaseInitializer {
         DatabaseMetaData meta = conn.getMetaData();
         ResultSet res = meta.getTables(null, null, "user_accounts", new String[]{"TABLE"});
         if (!res.next()) {
-            System.out.println("Creating user_account table...");
+            Launcher.getLogger().info("Creating user_accounts table if not exists...");
             String sql = "CREATE TABLE IF NOT EXISTS user_accounts (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "firstname TEXT NOT NULL, " +
                     "lastname TEXT NOT NULL, " +
                     "username TEXT NOT NULL, " +
                     "password TEXT NOT NULL);";
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            insertInitialData(conn);
+
+            try(Statement stmt = conn.createStatement()){
+                stmt.execute(sql);
+                insertInitialData(conn);
+            } catch (SQLException e){
+                Launcher.getLogger().error("Error creating user_accounts table: {}", e.getMessage(), e);
+            }
         }
     }
 
     private static void createTableClients(Connection conn) throws SQLException {
+        Launcher.getLogger().info("Creating clients table if not exists...");
         String sqlCreateClientsTable = "CREATE TABLE IF NOT EXISTS clients (" +
                 "client_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "first_name VARCHAR(45), " +
@@ -45,11 +50,15 @@ public class DatabaseInitializer {
                 "citizenship VARCHAR(45), " +
                 "notes VARCHAR(255), " +
                 "date DATE);";
-        Statement stmt = conn.createStatement();
-        stmt.execute(sqlCreateClientsTable);
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sqlCreateClientsTable);
+        } catch (SQLException e) {
+            Launcher.getLogger().error("Error creating clients table: {}", e.getMessage(), e);
+        }
     }
 
     private static void createTableApplications(Connection conn) throws SQLException {
+        Launcher.getLogger().info("Creating applications table if not exists...");
         String sqlCreateApplicationsTable = "CREATE TABLE IF NOT EXISTS applications (" +
                 "application_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "application_type VARCHAR(45), " +
@@ -59,11 +68,15 @@ public class DatabaseInitializer {
                 "client_id INTEGER, " +
                 "notes VARCHAR(255), " +
                 "FOREIGN KEY(client_id) REFERENCES clients(client_id));";
-        Statement stmt = conn.createStatement();
-        stmt.execute(sqlCreateApplicationsTable);
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sqlCreateApplicationsTable);
+        } catch (SQLException e) {
+            Launcher.getLogger().error("Error creating applications table: {}", e.getMessage(), e);
+        }
     }
 
-    private static void insertInitialData(Connection conn) throws SQLException {
+    private static void insertInitialData(Connection conn){
+        Launcher.getLogger().info("Inserting initial data to user_accounts table");
         String sqlInsert = "INSERT INTO user_accounts (firstname, lastname, username, password) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sqlInsert)) {
             pstmt.setString(1, "Satveer");
@@ -71,6 +84,8 @@ public class DatabaseInitializer {
             pstmt.setString(3, "admin");
             pstmt.setString(4, "admin");
             pstmt.executeUpdate();
+        }catch (SQLException e) {
+            Launcher.getLogger().error("Error inserting initial data into user_accounts table: {}", e.getMessage(), e);
         }
     }
 }

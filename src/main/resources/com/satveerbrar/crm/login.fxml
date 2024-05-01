@@ -15,7 +15,7 @@
     <left>
         <AnchorPane prefHeight="569.0" prefWidth="347.0" style="-fx-background-color: #1917ad;" BorderPane.alignment="CENTER">
          <children>
-            <Label layoutX="47.0" layoutY="65.0" prefHeight="55.0" prefWidth="254.0" style="-fx-text-fill: #FFFFFF;" text="Probe Immigration">
+            <Label layoutX="47.0" layoutY="65.0" prefHeight="55.0" prefWidth="254.0" style="-fx-text-fill: #FFFFFF;" text="ATG Immigration">
                <font>
                   <Font name="Arial Black" size="24.0" />
                </font>
