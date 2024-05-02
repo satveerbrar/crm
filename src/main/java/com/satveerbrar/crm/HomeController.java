@@ -4,9 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -94,15 +92,18 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ButtonUtils.setHoverCursor(homeNavButton);
-        ButtonUtils.setHoverCursor(addClientNavButton);
-        ButtonUtils.setHoverCursor(addApplicationsNavButton);
-        ButtonUtils.setHoverCursor(viewApplicationNavButton);
-        ButtonUtils.setHoverCursor(viewClientsNavButton);
-        ButtonUtils.setHoverCursor(homeNavButton);
+        applyHoverCursorToLabels(homeNavButton, addClientNavButton, addApplicationsNavButton, viewApplicationNavButton, viewClientsNavButton);
+
         loadDashboards();
         Launcher.getLogger().info("HomeController initialized");
     }
+
+    private void applyHoverCursorToLabels(Label... labels) {
+        for (Label label : labels) {
+            ButtonUtils.setHoverCursor(label);
+        }
+    }
+
 
     private void loadDashboards() {
         DatabaseConnection dbConnection = new DatabaseConnection();
@@ -131,6 +132,4 @@ public class HomeController implements Initializable {
             label.setText("Error");
         }
     }
-
-
 }
