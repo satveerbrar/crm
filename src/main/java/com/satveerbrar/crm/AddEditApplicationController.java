@@ -15,105 +15,13 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class AddEditApplicationController implements Initializable {
-    @FXML
-    private TextField clientId;
-    @FXML
-    private TextField nameField;
-    @FXML
-    private TextField emailField;
-    @FXML
-    private ChoiceBox<String> applicationTypeChoiceBox;
-    @FXML
-    private ChoiceBox<String> applicationStatusChoiceBox;
-    @FXML
-    private ChoiceBox<String> priorityChoiceBox;
-    @FXML
-    private TextArea notesInput;
-    @FXML
-    private Label headerLabel;
-    @FXML
-    private Button applicationSubmitButton;
 
+    @FXML private TextField clientId, nameField, emailField;
+    @FXML private ChoiceBox<String> applicationTypeChoiceBox, applicationStatusChoiceBox, priorityChoiceBox;
+    @FXML private TextArea notesInput;
+    @FXML private Label headerLabel;
+    @FXML private Button applicationSubmitButton;
     private ApplicationClient editingApplicationClient;
-
-    @FXML
-    public void submitForm(ActionEvent actionEvent) {
-        if(validateInputs()){
-            if(editingApplicationClient == null){
-                saveToDatabase(true);
-            }else{
-                saveToDatabase(false);
-            }
-
-        } else {
-            Launcher.getLogger().warn("Validation failed");
-        }
-    }
-
-    public void setEditingApplicationClient(ApplicationClient applicationClient) {
-        this.editingApplicationClient = applicationClient;
-        if (applicationClient != null) {
-            initializeFormWithClientData();
-            headerLabel.setText("Edit Existing Client");
-        } else {
-            headerLabel.setText("Add New Client");
-        }
-    }
-
-    private void initializeFormWithClientData() {
-        clientId.setDisable(true);
-        applicationTypeChoiceBox.setValue(editingApplicationClient.getApplicationType());
-        applicationStatusChoiceBox.setValue(editingApplicationClient.getApplicationStatus());
-        priorityChoiceBox.setValue(editingApplicationClient.getPriority());
-        notesInput.setText(editingApplicationClient.getNotes());
-    }
-
-    public boolean validateClientId(String clientId){
-
-        if(editingApplicationClient != null){
-            return true;
-        }
-
-        int clientIdInt;
-
-        if(clientId.isEmpty()){
-            showAlert("Please enter client_id", Alert.AlertType.ERROR);
-            return false;
-        }
-
-        try{
-            clientIdInt = Integer.parseInt(clientId);
-        }catch (NumberFormatException e){
-            Launcher.getLogger().error("Error while converting client_id to int", e);
-            showAlert("Please enter valid client_id", Alert.AlertType.ERROR);
-            return false;
-        }
-
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        String sql = "Select count(*) from clients WHERE client_id = ?";
-        try(Connection conn = dbConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setInt(1, clientIdInt);
-
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                if (count > 0) {
-                    return true;
-                } else {
-                    showAlert("No client found with the provided ID.", Alert.AlertType.ERROR);
-                    return false;
-                }
-            }
-
-        }catch (SQLException e){
-            Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
-            showAlert("Error while fetching client_id: " + e.getMessage(), Alert.AlertType.ERROR);
-            return false;
-        }
-        return true;
-    }
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -153,41 +61,10 @@ public class AddEditApplicationController implements Initializable {
 
         } catch (SQLException e) {
             Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
-            showAlert("Error fetching client details: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Error fetching client details: " + e.getMessage(), Alert.AlertType.ERROR);
         } catch (NumberFormatException e) {
-            showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
         }
-    }
-
-    private boolean validateInputs() {
-        return validateClientId(clientId.getText().trim()) &&
-                validateChoiceBox(applicationTypeChoiceBox, "Select Application Type", "application type") &&
-                validateChoiceBox(applicationStatusChoiceBox, "Select Status", "application status") &&
-                validateChoiceBox(priorityChoiceBox, "Select Priority", "priority");
-    }
-
-    private boolean validateChoiceBox(ChoiceBox<String> choiceBox, String defaultValue, String fieldName) {
-        if (choiceBox.getValue() == null || choiceBox.getValue().equals(defaultValue)) {
-            showAlert("Please select " + fieldName, Alert.AlertType.ERROR);
-            choiceBox.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    private void showAlert(String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(alertType.toString());
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-    private void clearForm() {
-        clientId.clear();
-        notesInput.clear();
-        applicationTypeChoiceBox.setValue("Select Application Type");
-        applicationStatusChoiceBox.setValue("Select Status");
-        priorityChoiceBox.setValue("Select Priority");
     }
 
     private void initializeChoiceBoxes() {
@@ -200,16 +77,101 @@ public class AddEditApplicationController implements Initializable {
         priorityChoiceBox.getItems().addAll("Low", "Medium", "High");
         priorityChoiceBox.setValue("Select Priority");
     }
-    private void saveToDatabase(boolean isNew) {
-        String sql;
-        if(isNew){
-            sql = "INSERT INTO applications (application_type, application_status, priority, submission_date, notes, client_id ) VALUES (?, ?, ?, ?, ?, ?)";
-        } else{
-            sql = "UPDATE applications SET application_type = ?, application_status = ?, priority = ?, submission_date = ?, notes = ? WHERE application_id = ?";
-        }
-        DatabaseConnection dbConnection = new DatabaseConnection();
 
-        try (Connection conn = dbConnection.getConnection();
+    public void submitForm(ActionEvent actionEvent) {
+        if(validateInputs()){
+            saveToDatabase(editingApplicationClient == null);
+        } else {
+            Launcher.getLogger().warn("Validation failed");
+        }
+    }
+
+    public void setEditingApplicationClient(ApplicationClient applicationClient) {
+        this.editingApplicationClient = applicationClient;
+        if (applicationClient != null) {
+            initializeFormWithClientData();
+            headerLabel.setText("Edit Existing Application");
+        } else {
+            headerLabel.setText("Add New Application");
+        }
+    }
+
+    private void initializeFormWithClientData() {
+        clientId.setDisable(true);
+        applicationTypeChoiceBox.setValue(editingApplicationClient.getApplicationType());
+        applicationStatusChoiceBox.setValue(editingApplicationClient.getApplicationStatus());
+        priorityChoiceBox.setValue(editingApplicationClient.getPriority());
+        notesInput.setText(editingApplicationClient.getNotes());
+    }
+
+    public boolean validateClientId(String clientId){
+
+        if(editingApplicationClient != null){
+            return true;
+        }
+
+        int clientIdInt;
+
+        if(clientId.isEmpty()){
+            AlertHelper.showAlert("Please enter client_id", Alert.AlertType.ERROR);
+            return false;
+        }
+
+        try{
+            clientIdInt = Integer.parseInt(clientId);
+        }catch (NumberFormatException e){
+            Launcher.getLogger().error("Error while converting client_id to int", e);
+            AlertHelper.showAlert("Please enter valid client_id", Alert.AlertType.ERROR);
+            return false;
+        }
+
+        DatabaseConnection dbConnection = new DatabaseConnection();
+        String sql = "Select count(*) from clients WHERE client_id = ?";
+        try(Connection conn = dbConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, clientIdInt);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                if (count > 0) {
+                    return true;
+                } else {
+                    AlertHelper.showAlert("No client found with the provided ID.", Alert.AlertType.ERROR);
+                    return false;
+                }
+            }
+
+        }catch (SQLException e){
+            Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
+            AlertHelper.showAlert("Error while fetching client_id: " + e.getMessage(), Alert.AlertType.ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateInputs() {
+        return validateClientId(clientId.getText().trim()) &&
+                validateChoiceBox(applicationTypeChoiceBox, "Select Application Type", "application type") &&
+                validateChoiceBox(applicationStatusChoiceBox, "Select Status", "application status") &&
+                validateChoiceBox(priorityChoiceBox, "Select Priority", "priority");
+    }
+
+    private boolean validateChoiceBox(ChoiceBox<String> choiceBox, String defaultValue, String fieldName) {
+        if (choiceBox.getValue() == null || choiceBox.getValue().equals(defaultValue)) {
+            AlertHelper.showAlert("Please select " + fieldName, Alert.AlertType.ERROR);
+            choiceBox.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    private void saveToDatabase(boolean isNew) {
+        String sql = isNew ?
+                "INSERT INTO applications (application_type, application_status, priority, submission_date, notes, client_id) VALUES (?, ?, ?, ?, ?, ?)" :
+                "UPDATE applications SET application_type = ?, application_status = ?, priority = ?, submission_date = ?, notes = ? WHERE application_id = ?";
+
+        try (Connection conn = new DatabaseConnection().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, applicationTypeChoiceBox.getValue());
@@ -226,24 +188,34 @@ public class AddEditApplicationController implements Initializable {
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 Launcher.getLogger().info("Application " + (isNew ? "added" : "updated") + " successfully!");
+                AlertHelper.showAlert("Application " + (isNew ? "added" : "updated") + " successfully!", Alert.AlertType.CONFIRMATION);
                 if (!isNew) {
                     closeStage();
                 } else {
                     clearForm();
                 }
             } else {
-                showAlert("No changes were made.", Alert.AlertType.ERROR);
+                AlertHelper.showAlert("No changes were made.", Alert.AlertType.ERROR);
             }
 
         } catch (SQLException e) {
             Launcher.getLogger().error("SQL Error: " + e.getMessage(), e);
-            showAlert("Error while saving to database: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Error while saving to database: " + e.getMessage(), Alert.AlertType.ERROR);
 
         } catch (NumberFormatException e) {
             Launcher.getLogger().error( "Invalid Client ID format.", e);
-            showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Invalid Client ID format.", Alert.AlertType.ERROR);
         }
     }
+
+    private void clearForm() {
+        clientId.clear();
+        notesInput.clear();
+        applicationTypeChoiceBox.setValue("Select Application Type");
+        applicationStatusChoiceBox.setValue("Select Status");
+        priorityChoiceBox.setValue("Select Priority");
+    }
+
 
     private void closeStage() {
         Stage stage = (Stage) applicationTypeChoiceBox.getScene().getWindow();

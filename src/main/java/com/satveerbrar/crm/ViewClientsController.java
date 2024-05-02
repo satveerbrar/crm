@@ -22,33 +22,30 @@ public class ViewClientsController implements Initializable {
 
     @FXML
     private TableColumn<Client, Integer> colClientId;
+
     @FXML
-    private TableColumn<Client, String> colFirstName;
+    private TableColumn<Client, String> colFirstName, colLastName, colEmail, colPhoneNumber, colReference, colCitizenship, colDate, colNotes;
+
     @FXML
-    private TableColumn<Client, String> colLastName;
-    @FXML
-    private TableColumn<Client, String> colEmail;
-    @FXML
-    private TableColumn<Client, String> colPhoneNumber;
-    @FXML
-    private TableColumn<Client, String> colReference;
-    @FXML
-    private TableColumn<Client, String> colCitizenship;
-    @FXML
-    private TableColumn<Client, String> colDate;
-    @FXML
-    private TableColumn<Client, String> colNotes;
-    @FXML
-    private TableColumn<Client, Void> colEdit;
-    @FXML
-    private TableColumn<Client, Void> colDelete;
+    private TableColumn<Client, Void> colEdit , colDelete;
+
     @FXML
     private TextField searchField;
 
-    ObservableList<Client> clients = FXCollections.observableArrayList();
+    private final ObservableList<Client> clients = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        configureTableColumns();
+        setupSearch();
+        loadClientData();
+        setupEditButton();
+        setupDeleteButton();
+
+        Launcher.getLogger().info("ViewClientsController initialized.");
+    }
+
+    private void configureTableColumns() {
         colClientId.setCellValueFactory(new PropertyValueFactory<>("Id"));
         colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
         colLastName.setCellValueFactory(new PropertyValueFactory<>("LastName"));
@@ -58,13 +55,6 @@ public class ViewClientsController implements Initializable {
         colCitizenship.setCellValueFactory(new PropertyValueFactory<>("Citizenship"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("Date"));
         colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
-
-        setupSearch();
-        loadClientData();
-        setupEditButton();
-        setupDeleteButton();
-
-        Launcher.getLogger().info("ViewClientsController initialized.");
     }
 
     private void setupEditButton() {
@@ -122,7 +112,7 @@ public class ViewClientsController implements Initializable {
 
     private void deleteClient(Client client) {
         if (client == null || client.getId() == 0) {
-            showAlert("No client selected to delete!", Alert.AlertType.ERROR);
+            AlertHelper.showAlert("No client selected to delete!", Alert.AlertType.ERROR);
             Launcher.getLogger().warn("No client selected to delete.");
             return;
         }
@@ -144,15 +134,15 @@ public class ViewClientsController implements Initializable {
             pstmt.setInt(1, client.getId());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                showAlert("Client deleted successfully!", Alert.AlertType.INFORMATION);
+                AlertHelper.showAlert("Client deleted successfully!", Alert.AlertType.INFORMATION);
                 clientsTable.getItems().remove(client);
                 Launcher.getLogger().info("Client deleted successfully.");
             } else {
-                showAlert("No client was deleted. Please try again.", Alert.AlertType.ERROR);
+                AlertHelper.showAlert("No client was deleted. Please try again.", Alert.AlertType.ERROR);
                 Launcher.getLogger().warn("No client was deleted.");
             }
         } catch (SQLException e) {
-            showAlert("Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
             Launcher.getLogger().error("Error while deleting the client: {}", e.getMessage());
         }
     }
@@ -201,14 +191,5 @@ public class ViewClientsController implements Initializable {
             Launcher.getLogger().error("Error fetching clients: {}", e.getMessage());
         }
         clientsTable.setItems(clients);
-    }
-
-    private void showAlert(String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(alertType.toString());
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-        Launcher.getLogger().info("Alert shown: {}", message);
     }
 }

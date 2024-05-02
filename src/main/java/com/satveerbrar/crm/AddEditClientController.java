@@ -4,49 +4,34 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class AddEditClientController implements Initializable {
 
     @FXML
-    private TextField firstNameInput;
-
-    @FXML
-    private TextField lastNameInput;
-
-    @FXML
-    private TextField emailInput;
-
-    @FXML
-    private TextField phoneNumberInput;
-
-    @FXML
-    private TextField referenceInput;
-
-    @FXML
-    private TextField citizenshipInput;
-
+    private TextField firstNameInput, lastNameInput, emailInput, phoneNumberInput, referenceInput, citizenshipInput;
     @FXML
     private TextArea notesInput;
+    @FXML
+    private Label headerLabel;
+    @FXML
+    private Button clientSubmitButton;
 
     private Client editingClient;
 
-    @FXML
-    private Label headerLabel;
-
-    @FXML
-    private Button clientSubmitButton;
+    private static final Pattern EMAIL_REGEX = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
+    private static final Pattern PHONE_REGEX = Pattern.compile("^\\+?\\d{10,13}$");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (editingClient != null) {
-            initializeFormWithClientData();
+            populateFormData();
         }
         ButtonUtils.setHoverCursor(clientSubmitButton);
         Launcher.getLogger().info("AddEditClientController initialized.");
@@ -55,14 +40,14 @@ public class AddEditClientController implements Initializable {
     public void setEditingClient(Client client) {
         this.editingClient = client;
         if (client != null) {
-            initializeFormWithClientData();
+            populateFormData();
             headerLabel.setText("Edit Existing Client");
         } else {
             headerLabel.setText("Add New Client");
         }
     }
 
-    private void initializeFormWithClientData() {
+    private void populateFormData() {
         firstNameInput.setText(editingClient.getFirstName());
         lastNameInput.setText(editingClient.getLastName());
         emailInput.setText(editingClient.getEmail());
@@ -70,140 +55,92 @@ public class AddEditClientController implements Initializable {
         referenceInput.setText(editingClient.getReference());
         citizenshipInput.setText(editingClient.getCitizenship());
         notesInput.setText(editingClient.getNotes());
-        Launcher.getLogger().info("Form initialized with client data.");
-    }
-
-    private boolean validateEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        if(!email.matches(emailRegex)){
-            showAlert("Invalid email", Alert.AlertType.ERROR);
-            emailInput.requestFocus();
-            Launcher.getLogger().error("Invalid email entered: {}", email);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validatePhoneNumber(String phoneNumber) {
-        String phoneRegex = "^\\+?\\d{10,13}$";
-        if(!phoneNumber.matches(phoneRegex)){
-            showAlert("Invalid Phone number", Alert.AlertType.ERROR);
-            phoneNumberInput.requestFocus();
-            Launcher.getLogger().error("Invalid phone number entered: {}", phoneNumber);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isInputValid() {
-        if (firstNameInput.getText().trim().isEmpty()){
-            showAlert("Please enter first Name", Alert.AlertType.ERROR);
-            firstNameInput.requestFocus();
-            Launcher.getLogger().error("First name is empty.");
-            return false;
-        }else if(lastNameInput.getText().trim().isEmpty()){
-            showAlert("Please enter last Name", Alert.AlertType.ERROR);
-            lastNameInput.requestFocus();
-            Launcher.getLogger().error("Last name is empty.");
-            return false;
-        }else if(emailInput.getText().trim().isEmpty()){
-            showAlert("Please enter email", Alert.AlertType.ERROR);
-            emailInput.requestFocus();
-            Launcher.getLogger().error("Email is empty.");
-            return false;
-        }else if(phoneNumberInput.getText().trim().isEmpty()){
-            showAlert("Please enter phone number", Alert.AlertType.ERROR);
-            phoneNumberInput.requestFocus();
-            Launcher.getLogger().error("Phone number is empty.");
-            return false;
-        }
-        return true;
+        Launcher.getLogger().info("Form populated with client data.");
     }
 
     public void submitForm() {
-        if (isInputValid() && validateEmail(emailInput.getText()) && validatePhoneNumber(phoneNumberInput.getText())) {
-            if (editingClient == null) {
-                saveToDatabase(true);
-            } else {
-                saveToDatabase(false);
-            }
+        if (validateInputs()) {
+            saveClientData();
         }
     }
 
-    private void saveToDatabase(boolean isNew) {
-        String sql;
-        if (isNew) {
-            sql = "INSERT INTO clients (first_name, last_name, email, phone_number, reference, citizenship, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        } else {
-            sql = "UPDATE clients SET first_name = ?, last_name = ?, email = ?, phone_number = ?, reference = ?, citizenship = ?, notes = ?, date = ? WHERE client_id = ?";
+    private boolean validateInputs() {
+        if (firstNameInput.getText().trim().isEmpty()) {
+            AlertHelper.showAlert("First name is required.", Alert.AlertType.ERROR);
+            return false;
         }
+        if (lastNameInput.getText().trim().isEmpty()) {
+            AlertHelper.showAlert("Last name is required.", Alert.AlertType.ERROR);
+            return false;
+        }
+        if (!EMAIL_REGEX.matcher(emailInput.getText().trim()).matches()) {
+            AlertHelper.showAlert("Invalid email format.", Alert.AlertType.ERROR);
+            return false;
+        }
+        if (!PHONE_REGEX.matcher(phoneNumberInput.getText().trim()).matches()) {
+            AlertHelper.showAlert("Invalid phone number format.", Alert.AlertType.ERROR);
+            return false;
+        }
+        return true;
+    }
 
+    private void saveClientData() {
+        String sql = editingClient == null ?
+                "INSERT INTO clients (first_name, last_name, email, phone_number, reference, citizenship, notes, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)" :
+                "UPDATE clients SET first_name = ?, last_name = ?, email = ?, phone_number = ?, reference = ?, citizenship = ?, notes = ?, date = ? WHERE client_id = ?";
         try (Connection conn = new DatabaseConnection().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, capitalize(firstNameInput.getText().trim()));
-            pstmt.setString(2, capitalize(lastNameInput.getText().trim()));
-            pstmt.setString(3, emailInput.getText().trim().toLowerCase());
-            pstmt.setString(4, phoneNumberInput.getText().trim());
-            pstmt.setString(5, capitalize(referenceInput.getText().trim()));
-            pstmt.setString(6, capitalize(citizenshipInput.getText().trim()));
-            pstmt.setString(7, notesInput.getText().trim());
-            pstmt.setDate(8, java.sql.Date.valueOf(LocalDate.now()));
-
-            if (!isNew) {
-                pstmt.setInt(9, editingClient.getId());
-            }
-
+            fillPreparedStatement(pstmt);
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                showAlert("Client " + (isNew ? "added" : "updated") + " successfully!", Alert.AlertType.INFORMATION);
-                if (!isNew) {
-                    closeStage();
-                } else {
-                    clearForm();
-                }
-                Launcher.getLogger().info("Client {} successfully.", isNew ? "added" : "updated");
+                AlertHelper.showAlert("Client " + (editingClient == null ? "added" : "updated") + " successfully!", Alert.AlertType.INFORMATION);
+                closeStageIfNeeded();
             } else {
-                showAlert("No changes were made.", Alert.AlertType.ERROR);
-                Launcher.getLogger().warn("No changes were made.");
+                AlertHelper.showAlert("No changes were made.", Alert.AlertType.INFORMATION);
             }
         } catch (SQLException e) {
-            showAlert("Database error: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Database error: " + e.getMessage(), Alert.AlertType.ERROR);
             Launcher.getLogger().error("Database error while saving client: {}", e.getMessage(), e);
         }
     }
 
-    private void closeStage() {
-        Stage stage = (Stage) firstNameInput.getScene().getWindow();
-        stage.close();
-        Launcher.getLogger().info("Stage closed.");
+    private void fillPreparedStatement(PreparedStatement pstmt) throws SQLException {
+        pstmt.setString(1, capitalize(firstNameInput.getText().trim()));
+        pstmt.setString(2, capitalize(lastNameInput.getText().trim()));
+        pstmt.setString(3, emailInput.getText().trim().toLowerCase());
+        pstmt.setString(4, phoneNumberInput.getText().trim());
+        pstmt.setString(5, capitalize(referenceInput.getText().trim()));
+        pstmt.setString(6, capitalize(citizenshipInput.getText().trim()));
+        pstmt.setString(7, notesInput.getText().trim());
+        pstmt.setDate(8, java.sql.Date.valueOf(LocalDate.now()));
+        if (editingClient != null) {
+            pstmt.setInt(9, editingClient.getId());
+        }
     }
 
-    private String capitalize(String name) {
-        if (name == null || name.isEmpty()) {
-            return name;
+    private void closeStageIfNeeded() {
+        if (editingClient != null) {
+            Stage stage = (Stage) firstNameInput.getScene().getWindow();
+            stage.close();
+        } else {
+            clearForm();
         }
-        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
     private void clearForm() {
-        firstNameInput.setText("");
-        lastNameInput.setText("");
-        emailInput.setText("");
-        phoneNumberInput.setText("");
-        referenceInput.setText("");
-        citizenshipInput.setText("");
-        notesInput.setText("");
-        Launcher.getLogger().info("Form cleared.");
+        firstNameInput.clear();
+        lastNameInput.clear();
+        emailInput.clear();
+        phoneNumberInput.clear();
+        referenceInput.clear();
+        citizenshipInput.clear();
+        notesInput.clear();
     }
 
-    private void showAlert(String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(alertType.toString());
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-        Launcher.getLogger().info("Alert shown: {}", message);
+    private String capitalize(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
     }
-
 }

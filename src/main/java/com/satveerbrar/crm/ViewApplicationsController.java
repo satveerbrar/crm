@@ -22,36 +22,16 @@ public class ViewApplicationsController implements Initializable {
     private TableView<ApplicationClient> applicationsTable;
 
     @FXML
-    private TableColumn<ApplicationClient, String> colFirstName;
+    private TableColumn<ApplicationClient, String> colFirstName, colLastName, colApplicationType, colApplicationStatus, colSubmissionDate, colPriority, colNotes;
 
     @FXML
-    private TableColumn<ApplicationClient, String> colLastName;
-
-    @FXML
-    private TableColumn<ApplicationClient, String> colApplicationType;
-
-    @FXML
-    private TableColumn<ApplicationClient, String> colApplicationStatus;
-
-    @FXML
-    private TableColumn<ApplicationClient, String> colSubmissionDate;
-
-    @FXML
-    private TableColumn<ApplicationClient, String> colPriority;
-
-    @FXML
-    private TableColumn<ApplicationClient, String> colNotes;
-
-    @FXML
-    private TableColumn<ApplicationClient, Void> colEdit;
-
-    @FXML
-    private TableColumn<ApplicationClient, Void> colDelete;
+    private TableColumn<ApplicationClient, Void> colEdit, colDelete;
 
     @FXML
     private TextField searchField;
 
-    ObservableList<ApplicationClient> applications = FXCollections.observableArrayList();
+    private final ObservableList<ApplicationClient> applications = FXCollections.observableArrayList();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -127,7 +107,7 @@ public class ViewApplicationsController implements Initializable {
 
     private void deleteApplication(ApplicationClient applicationClient) {
         if (applicationClient == null || applicationClient.getId() == 0) {
-            showAlert("No application selected to delete!", Alert.AlertType.ERROR);
+            AlertHelper.showAlert("No application selected to delete!", Alert.AlertType.ERROR);
             Launcher.getLogger().warn("No application selected to delete.");
             return;
         }
@@ -149,15 +129,15 @@ public class ViewApplicationsController implements Initializable {
             pstmt.setInt(1, applicationClient.getId());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                showAlert("Application deleted successfully!", Alert.AlertType.INFORMATION);
+                AlertHelper.showAlert("Application deleted successfully!", Alert.AlertType.INFORMATION);
                 applicationsTable.getItems().remove(applicationClient);
                 Launcher.getLogger().info("Application deleted successfully.");
             } else {
-                showAlert("No application was deleted. Please try again.", Alert.AlertType.ERROR);
+                AlertHelper.showAlert("No application was deleted. Please try again.", Alert.AlertType.ERROR);
                 Launcher.getLogger().warn("No application was deleted.");
             }
         } catch (SQLException e) {
-            showAlert("Error while deleting the application: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertHelper.showAlert("Error while deleting the application: " + e.getMessage(), Alert.AlertType.ERROR);
             Launcher.getLogger().error("Error while deleting the application: {}", e.getMessage());
         }
     }
@@ -206,14 +186,5 @@ public class ViewApplicationsController implements Initializable {
             Launcher.getLogger().error("Error fetching applications: {}", e.getMessage());
         }
         applicationsTable.setItems(applications);
-    }
-
-    private void showAlert(String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(alertType.toString());
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-        Launcher.getLogger().info("Alert shown: {}", message);
     }
 }
