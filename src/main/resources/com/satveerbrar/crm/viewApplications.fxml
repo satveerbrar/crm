@@ -1,38 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1200.0" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.satveerbrar.crm.ViewApplicationsController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0"
+            minWidth="1200.0"
+            prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21"
+            fx:controller="com.satveerbrar.crm.ViewApplicationsController">
     <center>
-        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="907.0" BorderPane.alignment="CENTER">
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                    prefHeight="720.0" prefWidth="907.0" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="applicationsTable" layoutX="60.0" layoutY="98.0" prefHeight="486.0" prefWidth="795.0" AnchorPane.bottomAnchor="136.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="98.0">
+                <TableView fx:id="applicationsTable" layoutX="60.0" layoutY="98.0" prefHeight="486.0" prefWidth="795.0"
+                           AnchorPane.bottomAnchor="136.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="52.0"
+                           AnchorPane.topAnchor="98.0">
                     <columns>
-                        <TableColumn fx:id="colFirstName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="FIRST_NAME" />
-                        <TableColumn fx:id="colLastName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="LAST_NAME" />
-                        <TableColumn fx:id="colApplicationType" maxWidth="128.0" minWidth="120.0" prefWidth="128.0" text="APPLICATION_TYPE" />
-                        <TableColumn fx:id="colApplicationStatus" maxWidth="145.0" minWidth="120.0" prefWidth="137.0" text="APPLICATION_STATUS" />
-                        <TableColumn fx:id="colSubmissionDate" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="DATE" />
-                        <TableColumn fx:id="colPriority" maxWidth="115.0" minWidth="95.0" prefWidth="95.0" text="PRIORITY" />
-                        <TableColumn fx:id="colNotes" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="NOTES" />
-                        <TableColumn fx:id="colEdit" prefWidth="75.0" text="Edit" />
-                        <TableColumn fx:id="colDelete" prefWidth="75.0" text="Delete" />
+                        <TableColumn fx:id="colFirstName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0"
+                                     text="FIRST_NAME"/>
+                        <TableColumn fx:id="colLastName" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0"
+                                     text="LAST_NAME"/>
+                        <TableColumn fx:id="colApplicationType" maxWidth="128.0" minWidth="120.0" prefWidth="128.0"
+                                     text="APPLICATION_TYPE"/>
+                        <TableColumn fx:id="colApplicationStatus" maxWidth="145.0" minWidth="120.0" prefWidth="137.0"
+                                     text="APPLICATION_STATUS"/>
+                        <TableColumn fx:id="colSubmissionDate" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0"
+                                     text="DATE"/>
+                        <TableColumn fx:id="colPriority" maxWidth="115.0" minWidth="95.0" prefWidth="95.0"
+                                     text="PRIORITY"/>
+                        <TableColumn fx:id="colNotes" maxWidth="-1.0" minWidth="120.0" prefWidth="-1.0" text="NOTES"/>
+                        <TableColumn fx:id="colEdit" prefWidth="75.0" text="Edit"/>
+                        <TableColumn fx:id="colDelete" prefWidth="75.0" text="Delete"/>
                     </columns>
                 </TableView>
-                <TextField fx:id="searchField" layoutX="537.0" layoutY="36.0" prefHeight="31.0" prefWidth="233.0" promptText="search">
+                <TextField fx:id="searchField" layoutX="537.0" layoutY="36.0" prefHeight="31.0" prefWidth="233.0"
+                           promptText="search">
                     <font>
-                        <Font size="15.0" />
+                        <Font size="15.0"/>
                     </font>
                 </TextField>
                 <Label layoutX="210.0" layoutY="37.0" prefHeight="28.0" prefWidth="162.0" text="Applications">
                     <font>
-                        <Font name="Times New Roman Bold" size="24.0" />
+                        <Font name="Times New Roman Bold" size="24.0"/>
                     </font>
                 </Label>
             </children>

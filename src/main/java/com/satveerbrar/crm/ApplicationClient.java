@@ -5,133 +5,141 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class ApplicationClient {
 
-    private final SimpleIntegerProperty id;
-    private final SimpleStringProperty firstName;
-    private final SimpleStringProperty lastName;
-    private final SimpleStringProperty applicationType;
-    private final SimpleStringProperty applicationStatus;
-    private final SimpleStringProperty submissionDate;
-    private final SimpleStringProperty priority;
-    private final SimpleStringProperty notes;
+  private final SimpleIntegerProperty id;
+  private final SimpleStringProperty firstName;
+  private final SimpleStringProperty lastName;
+  private final SimpleStringProperty applicationType;
+  private final SimpleStringProperty applicationStatus;
+  private final SimpleStringProperty submissionDate;
+  private final SimpleStringProperty priority;
+  private final SimpleStringProperty notes;
 
-    public ApplicationClient(int id, String firstName, String lastName, String applicationType, String applicationStatus, String submissionDate, String priority , String notes){
-        this.id = new SimpleIntegerProperty(id);
-        this.firstName = new SimpleStringProperty(firstName);
-        this.lastName = new SimpleStringProperty(lastName);
-        this.applicationType = new SimpleStringProperty(applicationType);
-        this.applicationStatus = new SimpleStringProperty(applicationStatus);
-        this.submissionDate = new SimpleStringProperty(submissionDate);
-        this.priority = new SimpleStringProperty(priority);
-        this.notes = new SimpleStringProperty(notes);
-    }
+  public ApplicationClient(
+      int id,
+      String firstName,
+      String lastName,
+      String applicationType,
+      String applicationStatus,
+      String submissionDate,
+      String priority,
+      String notes) {
+    this.id = new SimpleIntegerProperty(id);
+    this.firstName = new SimpleStringProperty(firstName);
+    this.lastName = new SimpleStringProperty(lastName);
+    this.applicationType = new SimpleStringProperty(applicationType);
+    this.applicationStatus = new SimpleStringProperty(applicationStatus);
+    this.submissionDate = new SimpleStringProperty(submissionDate);
+    this.priority = new SimpleStringProperty(priority);
+    this.notes = new SimpleStringProperty(notes);
+  }
 
-    public int getId() {
-        return id.get();
-    }
+  public int getId() {
+    return id.get();
+  }
 
-    public SimpleIntegerProperty idProperty() {
-        return id;
-    }
+  public void setId(int id) {
+    this.id.set(id);
+  }
 
-    public void setId(int id) {
-        this.id.set(id);
-    }
+  public SimpleIntegerProperty idProperty() {
+    return id;
+  }
 
-    public void setSubmissionDate(String submissionDate) {
-        this.submissionDate.set(submissionDate);
-    }
+  public String getFirstName() {
+    return firstName.get();
+  }
 
-    public String getFirstName() {
-        return firstName.get();
-    }
+  public void setFirstName(String firstName) {
+    this.firstName.set(firstName);
+  }
 
-    public SimpleStringProperty firstNameProperty() {
-        return firstName;
-    }
+  public SimpleStringProperty firstNameProperty() {
+    return firstName;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName.set(firstName);
-    }
+  public String getLastName() {
+    return lastName.get();
+  }
 
-    public String getLastName() {
-        return lastName.get();
-    }
+  public void setLastName(String lastName) {
+    this.lastName.set(lastName);
+  }
 
-    public SimpleStringProperty lastNameProperty() {
-        return lastName;
-    }
+  public SimpleStringProperty lastNameProperty() {
+    return lastName;
+  }
 
-    public void setLastName(String lastName) {
-        this.lastName.set(lastName);
-    }
+  public String getApplicationType() {
+    return applicationType.get();
+  }
 
-    public String getApplicationType() {
-        return applicationType.get();
-    }
+  public void setApplicationType(String applicationType) {
+    this.applicationType.set(applicationType);
+  }
 
-    public SimpleStringProperty applicationTypeProperty() {
-        return applicationType;
-    }
+  public SimpleStringProperty applicationTypeProperty() {
+    return applicationType;
+  }
 
-    public void setApplicationType(String applicationType) {
-        this.applicationType.set(applicationType);
-    }
+  public String getApplicationStatus() {
+    return applicationStatus.get();
+  }
 
-    public String getApplicationStatus() {
-        return applicationStatus.get();
-    }
+  public void setApplicationStatus(String applicationStatus) {
+    this.applicationStatus.set(applicationStatus);
+  }
 
-    public SimpleStringProperty applicationStatusProperty() {
-        return applicationStatus;
-    }
+  public SimpleStringProperty applicationStatusProperty() {
+    return applicationStatus;
+  }
 
-    public void setApplicationStatus(String applicationStatus) {
-        this.applicationStatus.set(applicationStatus);
-    }
+  public String getSubmissionDate() {
+    return submissionDate.get();
+  }
 
-    public String getSubmissionDate() {
-        return submissionDate.get();
-    }
+  public void setSubmissionDate(String submissionDate) {
+    this.submissionDate.set(submissionDate);
+  }
 
-    public SimpleStringProperty submissionDateProperty() {
-        return submissionDate;
-    }
+  public SimpleStringProperty submissionDateProperty() {
+    return submissionDate;
+  }
 
-    public void setSubmission_date(String submissionDate) {
-        this.submissionDate.set(submissionDate);
-    }
+  public void setSubmission_date(String submissionDate) {
+    this.submissionDate.set(submissionDate);
+  }
 
-    public String getPriority() {
-        return priority.get();
-    }
+  public String getPriority() {
+    return priority.get();
+  }
 
-    public SimpleStringProperty priorityProperty() {
-        return priority;
-    }
+  public void setPriority(String priority) {
+    this.priority.set(priority);
+  }
 
-    public void setPriority(String priority) {
-        this.priority.set(priority);
-    }
+  public SimpleStringProperty priorityProperty() {
+    return priority;
+  }
 
-    public String getNotes() {
-        return notes.get();
-    }
+  public String getNotes() {
+    return notes.get();
+  }
 
-    public SimpleStringProperty notesProperty() {
-        return notes;
-    }
+  public void setNotes(String notes) {
+    this.notes.set(notes);
+  }
 
-    public void setNotes(String notes) {
-        this.notes.set(notes);
-    }
+  public SimpleStringProperty notesProperty() {
+    return notes;
+  }
 
-    public boolean matchesSearch(String searchText){
-        return getFirstName().toLowerCase().contains(searchText.toLowerCase()) ||
-                getLastName().toLowerCase().contains(searchText.toLowerCase()) ||
-                getApplicationType().toLowerCase().contains(searchText.toLowerCase()) ||
-                getApplicationStatus().toLowerCase().contains(searchText.toLowerCase()) ||
-                getSubmissionDate().contains(searchText) ||
-                getPriority().toLowerCase().contains(searchText.toLowerCase()) ||
-                (getNotes() != null && getNotes().toLowerCase().contains(searchText.toLowerCase()));
-    }
+  public boolean matchesSearch(String searchText) {
+    return getFirstName().toLowerCase().contains(searchText.toLowerCase())
+        || getLastName().toLowerCase().contains(searchText.toLowerCase())
+        || getApplicationType().toLowerCase().contains(searchText.toLowerCase())
+        || getApplicationStatus().toLowerCase().contains(searchText.toLowerCase())
+        || getSubmissionDate().contains(searchText)
+        || getPriority().toLowerCase().contains(searchText.toLowerCase())
+        || (getNotes() != null && getNotes().toLowerCase().contains(searchText.toLowerCase()));
+  }
 }

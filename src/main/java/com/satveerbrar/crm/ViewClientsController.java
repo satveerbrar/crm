@@ -1,5 +1,9 @@
 package com.satveerbrar.crm;
 
+import java.io.IOException;
+import java.net.URL;
+import java.sql.*;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,185 +15,194 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URL;
-import java.sql.*;
-import java.util.ResourceBundle;
-
 public class ViewClientsController implements Initializable {
-    @FXML
-    private TableView<Client> clientsTable;
+  private final ObservableList<Client> clients = FXCollections.observableArrayList();
+  @FXML private TableView<Client> clientsTable;
+  @FXML private TableColumn<Client, Integer> colClientId;
+  @FXML
+  private TableColumn<Client, String> colFirstName,
+      colLastName,
+      colEmail,
+      colPhoneNumber,
+      colReference,
+      colCitizenship,
+      colDate,
+      colNotes;
+  @FXML private TableColumn<Client, Void> colEdit, colDelete;
+  @FXML private TextField searchField;
 
-    @FXML
-    private TableColumn<Client, Integer> colClientId;
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    configureTableColumns();
+    setupSearch();
+    loadClientData();
+    setupEditButton();
+    setupDeleteButton();
 
-    @FXML
-    private TableColumn<Client, String> colFirstName, colLastName, colEmail, colPhoneNumber, colReference, colCitizenship, colDate, colNotes;
+    Launcher.getLogger().info("ViewClientsController initialized.");
+  }
 
-    @FXML
-    private TableColumn<Client, Void> colEdit , colDelete;
+  private void configureTableColumns() {
+    colClientId.setCellValueFactory(new PropertyValueFactory<>("Id"));
+    colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
+    colLastName.setCellValueFactory(new PropertyValueFactory<>("LastName"));
+    colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
+    colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("PhoneNumber"));
+    colReference.setCellValueFactory(new PropertyValueFactory<>("Reference"));
+    colCitizenship.setCellValueFactory(new PropertyValueFactory<>("Citizenship"));
+    colDate.setCellValueFactory(new PropertyValueFactory<>("Date"));
+    colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
+  }
 
-    @FXML
-    private TextField searchField;
+  private void setupEditButton() {
+    colEdit.setCellFactory(
+        param ->
+            new TableCell<Client, Void>() {
+              private final Button btn = new Button("Edit");
 
-    private final ObservableList<Client> clients = FXCollections.observableArrayList();
+              {
+                btn.setOnAction(
+                    event -> {
+                      Client client = getTableView().getItems().get(getIndex());
+                      editClient(client);
+                    });
+              }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        configureTableColumns();
-        setupSearch();
-        loadClientData();
-        setupEditButton();
-        setupDeleteButton();
-
-        Launcher.getLogger().info("ViewClientsController initialized.");
-    }
-
-    private void configureTableColumns() {
-        colClientId.setCellValueFactory(new PropertyValueFactory<>("Id"));
-        colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
-        colLastName.setCellValueFactory(new PropertyValueFactory<>("LastName"));
-        colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
-        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("PhoneNumber"));
-        colReference.setCellValueFactory(new PropertyValueFactory<>("Reference"));
-        colCitizenship.setCellValueFactory(new PropertyValueFactory<>("Citizenship"));
-        colDate.setCellValueFactory(new PropertyValueFactory<>("Date"));
-        colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
-    }
-
-    private void setupEditButton() {
-        colEdit.setCellFactory(param -> new TableCell<Client, Void>() {
-            private final Button btn = new Button("Edit");
-
-            {
-                btn.setOnAction(event -> {
-                    Client client = getTableView().getItems().get(getIndex());
-                    editClient(client);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
+              @Override
+              protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
-            }
-        });
-    }
+              }
+            });
+  }
 
-    private void setupDeleteButton() {
-        colDelete.setCellFactory(param -> new TableCell<Client, Void>() {
-            private final Button btn = new Button("Delete");
+  private void setupDeleteButton() {
+    colDelete.setCellFactory(
+        param ->
+            new TableCell<Client, Void>() {
+              private final Button btn = new Button("Delete");
 
-            {
-                btn.setOnAction(event -> {
-                    Client client = getTableView().getItems().get(getIndex());
-                    deleteClient(client);
-                });
-            }
+              {
+                btn.setOnAction(
+                    event -> {
+                      Client client = getTableView().getItems().get(getIndex());
+                      deleteClient(client);
+                    });
+              }
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
+              @Override
+              protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
-            }
-        });
+              }
+            });
+  }
+
+  private void editClient(Client client) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("addClient.fxml"));
+      Parent root = loader.load();
+      AddEditClientController controller = loader.getController();
+      controller.setEditingClient(client);
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Edit Client");
+      stage.show();
+    } catch (IOException e) {
+      Launcher.getLogger().error("Error while editing client: {}", e.getMessage());
+    }
+  }
+
+  private void deleteClient(Client client) {
+    if (client == null || client.getId() == 0) {
+      AlertHelper.showAlert("No client selected to delete!", Alert.AlertType.ERROR);
+      Launcher.getLogger().warn("No client selected to delete.");
+      return;
     }
 
-    private void editClient(Client client) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("addClient.fxml"));
-            Parent root = loader.load();
-            AddEditClientController controller = loader.getController();
-            controller.setEditingClient(client);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Edit Client");
-            stage.show();
-        } catch (IOException e) {
-            Launcher.getLogger().error("Error while editing client: {}", e.getMessage());
-        }
-    }
-
-    private void deleteClient(Client client) {
-        if (client == null || client.getId() == 0) {
-            AlertHelper.showAlert("No client selected to delete!", Alert.AlertType.ERROR);
-            Launcher.getLogger().warn("No client selected to delete.");
-            return;
-        }
-
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this client?", ButtonType.YES, ButtonType.NO);
-        confirmationAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
+    Alert confirmationAlert =
+        new Alert(
+            Alert.AlertType.CONFIRMATION,
+            "Are you sure you want to delete this client?",
+            ButtonType.YES,
+            ButtonType.NO);
+    confirmationAlert
+        .showAndWait()
+        .ifPresent(
+            response -> {
+              if (response == ButtonType.YES) {
                 executeDelete(client);
-            }
-        });
+              }
+            });
+  }
+
+  private void executeDelete(Client client) {
+    String sql = "DELETE FROM clients WHERE client_id = ?";
+
+    try (Connection conn = new DatabaseConnection().getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+      pstmt.setInt(1, client.getId());
+      int affectedRows = pstmt.executeUpdate();
+      if (affectedRows > 0) {
+
+        AlertHelper.showAlert("Client deleted successfully!", Alert.AlertType.INFORMATION);
+        clientsTable.getItems().remove(client);
+        Launcher.getLogger().info("Client deleted successfully.");
+      } else {
+        AlertHelper.showAlert("No client was deleted. Please try again.", Alert.AlertType.ERROR);
+        Launcher.getLogger().warn("No client was deleted.");
+      }
+    } catch (SQLException e) {
+      AlertHelper.showAlert(
+          "Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
+      Launcher.getLogger().error("Error while deleting the client: {}", e.getMessage());
     }
+  }
 
-    private void executeDelete(Client client) {
-        String sql = "DELETE FROM clients WHERE client_id = ?";
+  private void setupSearch() {
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> filterClients(newVal));
+  }
 
-        try (Connection conn = new DatabaseConnection().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, client.getId());
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                AlertHelper.showAlert("Client deleted successfully!", Alert.AlertType.INFORMATION);
-                clientsTable.getItems().remove(client);
-                Launcher.getLogger().info("Client deleted successfully.");
-            } else {
-                AlertHelper.showAlert("No client was deleted. Please try again.", Alert.AlertType.ERROR);
-                Launcher.getLogger().warn("No client was deleted.");
-            }
-        } catch (SQLException e) {
-            AlertHelper.showAlert("Error while deleting the client: " + e.getMessage(), Alert.AlertType.ERROR);
-            Launcher.getLogger().error("Error while deleting the client: {}", e.getMessage());
+  private void filterClients(String searchText) {
+    if (searchText == null || searchText.isEmpty()) {
+      clientsTable.setItems(clients);
+    } else {
+      ObservableList<Client> filteredList = FXCollections.observableArrayList();
+      for (Client client : clients) {
+        if (client.matchesSearch(searchText)) {
+          filteredList.add(client);
         }
+      }
+      clientsTable.setItems(filteredList);
     }
+  }
 
-    private void setupSearch() {
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> filterClients(newVal));
+  private void loadClientData() {
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    Connection conn = dbConnection.getConnection();
+
+    try (Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM clients")) {
+
+      while (rs.next()) {
+        clients.add(
+            new Client(
+                rs.getInt("CLIENT_ID"),
+                rs.getString("FIRST_NAME"),
+                rs.getString("LAST_NAME"),
+                rs.getString("EMAIL"),
+                rs.getString("PHONE_NUMBER"),
+                rs.getString("REFERENCE"),
+                rs.getString("CITIZENSHIP"),
+                rs.getString("DATE"),
+                rs.getString("NOTES")));
+      }
+      Launcher.getLogger().info("Client data loaded successfully.");
+    } catch (Exception e) {
+      System.out.println("Error fetching clients: " + e.getMessage());
+      Launcher.getLogger().error("Error fetching clients: {}", e.getMessage());
     }
-
-    private void filterClients(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            clientsTable.setItems(clients);
-        } else {
-            ObservableList<Client> filteredList = FXCollections.observableArrayList();
-            for (Client client : clients) {
-                if (client.matchesSearch(searchText)) {
-                    filteredList.add(client);
-                }
-            }
-            clientsTable.setItems(filteredList);
-        }
-    }
-
-    private void loadClientData() {
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        Connection conn = dbConnection.getConnection();
-
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM clients")) {
-
-            while (rs.next()) {
-                clients.add(new Client(
-                        rs.getInt("CLIENT_ID"),
-                        rs.getString("FIRST_NAME"),
-                        rs.getString("LAST_NAME"),
-                        rs.getString("EMAIL"),
-                        rs.getString("PHONE_NUMBER"),
-                        rs.getString("REFERENCE"),
-                        rs.getString("CITIZENSHIP"),
-                        rs.getString("DATE"),
-                        rs.getString("NOTES")
-                ));
-            }
-            Launcher.getLogger().info("Client data loaded successfully.");
-        } catch (Exception e) {
-            System.out.println("Error fetching clients: " + e.getMessage());
-            Launcher.getLogger().error("Error fetching clients: {}", e.getMessage());
-        }
-        clientsTable.setItems(clients);
-    }
+    clientsTable.setItems(clients);
+  }
 }
