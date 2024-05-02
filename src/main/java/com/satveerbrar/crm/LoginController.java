@@ -17,81 +17,71 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-
 public class LoginController implements Initializable {
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        ButtonUtils.setHoverCursor(loginButton);
-        Launcher.getLogger().info("LoginController initialized");
+  @FXML private TextField usernameInput;
+  @FXML private PasswordField passwordInput;
+  @FXML private Label invalidLoginMessageLabel;
+  @FXML private Button loginButton;
+
+  @Override
+  public void initialize(URL url, ResourceBundle rb) {
+    ButtonUtils.setHoverCursor(loginButton);
+    Launcher.getLogger().info("LoginController initialized");
+  }
+
+  @FXML
+  public void handleLoginButtonAction(ActionEvent event) {
+    Launcher.getLogger().info("Login button clicked");
+    invalidLoginMessageLabel.setText("Invalid Login. Please try again");
+
+    if (usernameInput.getText().isBlank() && passwordInput.getText().isBlank()) {
+      Launcher.getLogger().warn("Invalid login attempt. username and password blank");
+      invalidLoginMessageLabel.setText("Please enter username and password");
+    } else if (usernameInput.getText().isBlank()) {
+      Launcher.getLogger().warn("Invalid login attempt. username blank");
+      invalidLoginMessageLabel.setText("Please enter username");
+    } else if (passwordInput.getText().isBlank()) {
+      Launcher.getLogger().warn("Invalid login attempt. password blank");
+      invalidLoginMessageLabel.setText("Please enter password");
+    } else {
+      validateLogin();
     }
+  }
 
-    @FXML
-    private TextField usernameInput;
+  public void validateLogin() {
+    DatabaseConnection connectNow = new DatabaseConnection();
+    Connection connectDb = connectNow.getConnection();
 
-    @FXML
-    private PasswordField passwordInput;
+    String verifyLogin = "SELECT count(1) FROM user_accounts WHERE username = ? AND password = ?";
 
-    @FXML
-    private Label invalidLoginMessageLabel;
+    try (PreparedStatement statement = connectDb.prepareStatement(verifyLogin)) {
+      statement.setString(1, usernameInput.getText());
+      statement.setString(2, passwordInput.getText());
 
-    @FXML
-    private Button loginButton;
+      ResultSet queryResult = statement.executeQuery();
 
-    @FXML
-    public void handleLoginButtonAction(ActionEvent event) {
-        Launcher.getLogger().info("Login button clicked");
-        invalidLoginMessageLabel.setText("Invalid Login. Please try again");
-
-        if(usernameInput.getText().isBlank() && passwordInput.getText().isBlank()){
-            Launcher.getLogger().warn("Invalid login attempt. username and password blank");
-            invalidLoginMessageLabel.setText("Please enter username and password");
-        }else if(usernameInput.getText().isBlank()){
-            Launcher.getLogger().warn("Invalid login attempt. username blank");
-           invalidLoginMessageLabel.setText("Please enter username");
-        }
-        else if(passwordInput.getText().isBlank()){
-            Launcher.getLogger().warn("Invalid login attempt. password blank");
-            invalidLoginMessageLabel.setText("Please enter password");
-        }
-        else{
-            validateLogin();
-        }
+      if (queryResult.next() && queryResult.getInt(1) == 1) {
+        Launcher.getLogger().info("Login validated for user: {}", usernameInput.getText());
+        transitionToHomePage();
+      } else {
+        Launcher.getLogger().warn("Invalid login attempt for user: {}", usernameInput.getText());
+        invalidLoginMessageLabel.setText("Invalid Login! Try again");
+      }
+    } catch (Exception e) {
+      Launcher.getLogger()
+          .error("Exception occurred during login validation: {}", e.getMessage(), e);
     }
+  }
 
-    public void validateLogin() {
-        DatabaseConnection connectNow = new DatabaseConnection();
-        Connection connectDb = connectNow.getConnection();
-
-        String verifyLogin = "SELECT count(1) FROM user_accounts WHERE username = ? AND password = ?";
-
-        try (PreparedStatement statement = connectDb.prepareStatement(verifyLogin)) {
-            statement.setString(1, usernameInput.getText());
-            statement.setString(2, passwordInput.getText());
-
-            ResultSet queryResult = statement.executeQuery();
-
-            if (queryResult.next() && queryResult.getInt(1) == 1) {
-                Launcher.getLogger().info("Login validated for user: {}", usernameInput.getText());
-                transitionToHomePage();
-            } else {
-                Launcher.getLogger().warn("Invalid login attempt for user: {}", usernameInput.getText());
-                invalidLoginMessageLabel.setText("Invalid Login! Try again");
-            }
-        } catch (Exception e) {
-            Launcher.getLogger().error("Exception occurred during login validation: {}", e.getMessage(), e);
-        }
-    }
-
-    private void transitionToHomePage() throws IOException {
-        loginButton.getScene().getWindow().hide();
-        Launcher.getLogger().info("Loading home.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("home.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1200, 720);
-        Stage stage = new Stage();
-        stage.setTitle("Home");
-        stage.setScene(scene);
-        stage.show();
-    }
-
- }
+  private void transitionToHomePage() throws IOException {
+    loginButton.getScene().getWindow().hide();
+    Launcher.getLogger().info("Loading home.fxml");
+    FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("home.fxml"));
+    Scene scene = new Scene(fxmlLoader.load(), 1200, 720);
+    Stage stage = new Stage();
+    stage.setTitle("Home");
+    stage.setScene(scene);
+    stage.show();
+  }
+}

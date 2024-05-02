@@ -60,6 +60,11 @@
             <artifactId>log4j-api</artifactId>
             <version>2.23.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.googlejavaformat</groupId>
+            <artifactId>google-java-format</artifactId>
+            <version>1.22.0</version>
+        </dependency>
     </dependencies>
 
     <build>

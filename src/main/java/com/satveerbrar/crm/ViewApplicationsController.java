@@ -1,5 +1,9 @@
 package com.satveerbrar.crm;
 
+import java.io.IOException;
+import java.net.URL;
+import java.sql.*;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,180 +15,192 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URL;
-import java.sql.*;
-import java.util.ResourceBundle;
-
 public class ViewApplicationsController implements Initializable {
 
-    @FXML
-    private TableView<ApplicationClient> applicationsTable;
+  private final ObservableList<ApplicationClient> applications =
+      FXCollections.observableArrayList();
+  @FXML private TableView<ApplicationClient> applicationsTable;
+  @FXML
+  private TableColumn<ApplicationClient, String> colFirstName,
+      colLastName,
+      colApplicationType,
+      colApplicationStatus,
+      colSubmissionDate,
+      colPriority,
+      colNotes;
+  @FXML private TableColumn<ApplicationClient, Void> colEdit, colDelete;
+  @FXML private TextField searchField;
 
-    @FXML
-    private TableColumn<ApplicationClient, String> colFirstName, colLastName, colApplicationType, colApplicationStatus, colSubmissionDate, colPriority, colNotes;
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
+    colLastName.setCellValueFactory(new PropertyValueFactory<>("LastName"));
+    colApplicationType.setCellValueFactory(new PropertyValueFactory<>("ApplicationType"));
+    colApplicationStatus.setCellValueFactory(new PropertyValueFactory<>("ApplicationStatus"));
+    colSubmissionDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
+    colPriority.setCellValueFactory(new PropertyValueFactory<>("Priority"));
+    colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
 
-    @FXML
-    private TableColumn<ApplicationClient, Void> colEdit, colDelete;
+    setupSearch();
+    loadApplicationData();
+    setupEditButton();
+    setupDeleteButton();
 
-    @FXML
-    private TextField searchField;
+    Launcher.getLogger().info("ViewApplicationsController initialized.");
+  }
 
-    private final ObservableList<ApplicationClient> applications = FXCollections.observableArrayList();
+  private void setupEditButton() {
+    colEdit.setCellFactory(
+        param ->
+            new TableCell<ApplicationClient, Void>() {
+              private final Button btn = new Button("Edit");
 
+              {
+                btn.setOnAction(
+                    event -> {
+                      ApplicationClient applicationClient =
+                          getTableView().getItems().get(getIndex());
+                      editApplication(applicationClient);
+                    });
+              }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
-        colLastName.setCellValueFactory(new PropertyValueFactory<>("LastName"));
-        colApplicationType.setCellValueFactory(new PropertyValueFactory<>("ApplicationType"));
-        colApplicationStatus.setCellValueFactory(new PropertyValueFactory<>("ApplicationStatus"));
-        colSubmissionDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
-        colPriority.setCellValueFactory(new PropertyValueFactory<>("Priority"));
-        colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
-
-        setupSearch();
-        loadApplicationData();
-        setupEditButton();
-        setupDeleteButton();
-
-        Launcher.getLogger().info("ViewApplicationsController initialized.");
-    }
-
-    private void setupEditButton() {
-        colEdit.setCellFactory(param -> new TableCell<ApplicationClient, Void>() {
-            private final Button btn = new Button("Edit");
-
-            {
-                btn.setOnAction(event -> {
-                    ApplicationClient applicationClient= getTableView().getItems().get(getIndex());
-                    editApplication(applicationClient);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
+              @Override
+              protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
-            }
-        });
-    }
+              }
+            });
+  }
 
-    private void setupDeleteButton() {
-        colDelete.setCellFactory(param -> new TableCell<ApplicationClient, Void>() {
-            private final Button btn = new Button("Delete");
+  private void setupDeleteButton() {
+    colDelete.setCellFactory(
+        param ->
+            new TableCell<ApplicationClient, Void>() {
+              private final Button btn = new Button("Delete");
 
-            {
-                btn.setOnAction(event -> {
-                    ApplicationClient applicationClient = getTableView().getItems().get(getIndex());
-                    deleteApplication(applicationClient);
-                });
-            }
+              {
+                btn.setOnAction(
+                    event -> {
+                      ApplicationClient applicationClient =
+                          getTableView().getItems().get(getIndex());
+                      deleteApplication(applicationClient);
+                    });
+              }
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
+              @Override
+              protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
-            }
-        });
+              }
+            });
+  }
+
+  private void editApplication(ApplicationClient applicationClient) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("addApplication.fxml"));
+      Parent root = loader.load();
+      AddEditApplicationController controller = loader.getController();
+      controller.setEditingApplicationClient(applicationClient);
+      Stage stage = new Stage();
+      stage.setScene(new Scene(root));
+      stage.setTitle("Edit Application");
+      stage.show();
+    } catch (IOException e) {
+      Launcher.getLogger().error("Error while editing application: {}", e.getMessage());
+    }
+  }
+
+  private void deleteApplication(ApplicationClient applicationClient) {
+    if (applicationClient == null || applicationClient.getId() == 0) {
+      AlertHelper.showAlert("No application selected to delete!", Alert.AlertType.ERROR);
+      Launcher.getLogger().warn("No application selected to delete.");
+      return;
     }
 
-
-    private void editApplication(ApplicationClient applicationClient) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("addApplication.fxml"));
-            Parent root = loader.load();
-            AddEditApplicationController controller = loader.getController();
-            controller.setEditingApplicationClient(applicationClient);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Edit Application");
-            stage.show();
-        } catch (IOException e) {
-            Launcher.getLogger().error("Error while editing application: {}", e.getMessage());
-        }
-    }
-
-    private void deleteApplication(ApplicationClient applicationClient) {
-        if (applicationClient == null || applicationClient.getId() == 0) {
-            AlertHelper.showAlert("No application selected to delete!", Alert.AlertType.ERROR);
-            Launcher.getLogger().warn("No application selected to delete.");
-            return;
-        }
-
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete this application?", ButtonType.YES, ButtonType.NO);
-        confirmationAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
+    Alert confirmationAlert =
+        new Alert(
+            Alert.AlertType.CONFIRMATION,
+            "Are you sure you want to delete this application?",
+            ButtonType.YES,
+            ButtonType.NO);
+    confirmationAlert
+        .showAndWait()
+        .ifPresent(
+            response -> {
+              if (response == ButtonType.YES) {
                 executeDelete(applicationClient);
-            }
-        });
+              }
+            });
+  }
+
+  private void executeDelete(ApplicationClient applicationClient) {
+    String sql = "DELETE FROM applications WHERE application_id = ?";
+
+    try (Connection conn = new DatabaseConnection().getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+      pstmt.setInt(1, applicationClient.getId());
+      int affectedRows = pstmt.executeUpdate();
+      if (affectedRows > 0) {
+        AlertHelper.showAlert("Application deleted successfully!", Alert.AlertType.INFORMATION);
+        applicationsTable.getItems().remove(applicationClient);
+        Launcher.getLogger().info("Application deleted successfully.");
+      } else {
+        AlertHelper.showAlert(
+            "No application was deleted. Please try again.", Alert.AlertType.ERROR);
+        Launcher.getLogger().warn("No application was deleted.");
+      }
+    } catch (SQLException e) {
+      AlertHelper.showAlert(
+          "Error while deleting the application: " + e.getMessage(), Alert.AlertType.ERROR);
+      Launcher.getLogger().error("Error while deleting the application: {}", e.getMessage());
     }
+  }
 
-    private void executeDelete(ApplicationClient applicationClient) {
-        String sql = "DELETE FROM applications WHERE application_id = ?";
+  private void setupSearch() {
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> filterApplications(newVal));
+  }
 
-        try (Connection conn = new DatabaseConnection().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, applicationClient.getId());
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                AlertHelper.showAlert("Application deleted successfully!", Alert.AlertType.INFORMATION);
-                applicationsTable.getItems().remove(applicationClient);
-                Launcher.getLogger().info("Application deleted successfully.");
-            } else {
-                AlertHelper.showAlert("No application was deleted. Please try again.", Alert.AlertType.ERROR);
-                Launcher.getLogger().warn("No application was deleted.");
-            }
-        } catch (SQLException e) {
-            AlertHelper.showAlert("Error while deleting the application: " + e.getMessage(), Alert.AlertType.ERROR);
-            Launcher.getLogger().error("Error while deleting the application: {}", e.getMessage());
+  private void filterApplications(String searchText) {
+    if (searchText == null || searchText.isEmpty()) {
+      applicationsTable.setItems(applications);
+    } else {
+      ObservableList<ApplicationClient> filteredList = FXCollections.observableArrayList();
+      for (ApplicationClient applicationClient : applications) {
+        if (applicationClient.matchesSearch(searchText)) {
+          filteredList.add(applicationClient);
         }
+        applicationsTable.setItems(filteredList);
+      }
     }
+  }
 
-    private void setupSearch(){
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> filterApplications(newVal));
+  private void loadApplicationData() {
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    Connection conn = dbConnection.getConnection();
+
+    try (Statement stmt = conn.createStatement();
+        ResultSet rs =
+            stmt.executeQuery(
+                "SELECT a.*, c.FIRST_NAME, c.LAST_NAME FROM applications a JOIN clients c ON a.client_id = c.client_id")) {
+
+      while (rs.next()) {
+        applications.add(
+            new ApplicationClient(
+                rs.getInt("APPLICATION_ID"),
+                rs.getString("FIRST_NAME"),
+                rs.getString("LAST_NAME"),
+                rs.getString("APPLICATION_TYPE"),
+                rs.getString("APPLICATION_STATUS"),
+                rs.getString("SUBMISSION_DATE"),
+                rs.getString("PRIORITY"),
+                rs.getString("NOTES")));
+      }
+      Launcher.getLogger().info("Application data loaded successfully.");
+    } catch (Exception e) {
+      System.out.println("Error fetching applications: " + e.getMessage());
+      Launcher.getLogger().error("Error fetching applications: {}", e.getMessage());
     }
-
-    private void filterApplications(String searchText){
-        if(searchText == null || searchText.isEmpty()){
-            applicationsTable.setItems(applications);
-        }
-        else{
-            ObservableList<ApplicationClient> filteredList = FXCollections.observableArrayList();
-            for (ApplicationClient applicationClient : applications){
-                if(applicationClient.matchesSearch(searchText)){
-                    filteredList.add(applicationClient);
-                }
-                applicationsTable.setItems(filteredList);
-            }
-        }
-    }
-
-    private void loadApplicationData() {
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        Connection conn = dbConnection.getConnection();
-
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT a.*, c.FIRST_NAME, c.LAST_NAME FROM applications a JOIN clients c ON a.client_id = c.client_id")) {
-
-            while (rs.next()) {
-                applications.add(new ApplicationClient(
-                        rs.getInt("APPLICATION_ID"),
-                        rs.getString("FIRST_NAME"),
-                        rs.getString("LAST_NAME"),
-                        rs.getString("APPLICATION_TYPE"),
-                        rs.getString("APPLICATION_STATUS"),
-                        rs.getString("SUBMISSION_DATE"),
-                        rs.getString("PRIORITY"),
-                        rs.getString("NOTES")
-                ));
-            }
-            Launcher.getLogger().info("Application data loaded successfully.");
-        } catch (Exception e) {
-            System.out.println("Error fetching applications: " + e.getMessage());
-            Launcher.getLogger().error("Error fetching applications: {}", e.getMessage());
-        }
-        applicationsTable.setItems(applications);
-    }
+    applicationsTable.setItems(applications);
+  }
 }
