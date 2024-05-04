@@ -3,6 +3,11 @@ package com.satveerbrar.crm;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/**
+ * Represents a client's application with properties bindable in a JavaFX user interface. This class
+ * stores details about the application such as name, type, status, etc., and provides property
+ * accessors that facilitate UI updates when data changes.
+ */
 public class ApplicationClient {
 
   private final SimpleIntegerProperty id;
@@ -133,6 +138,12 @@ public class ApplicationClient {
     return notes;
   }
 
+  /**
+   * Checks if any of the textual properties of this application match the given search text.
+   *
+   * @param searchText The text to search for within the application's properties.
+   * @return true if any property contains the search text, false otherwise.
+   */
   public boolean matchesSearch(String searchText) {
     return getFirstName().toLowerCase().contains(searchText.toLowerCase())
         || getLastName().toLowerCase().contains(searchText.toLowerCase())

@@ -31,6 +31,11 @@ public class ViewClientsController implements Initializable {
   @FXML private TableColumn<Client, Void> colEdit, colDelete;
   @FXML private TextField searchField;
 
+  /**
+   * Initializes the controller by configuring table columns, setting up button functionalities, and
+   * loading initial client data into the table. This method is called automatically after the FXML
+   * fields have been injected.
+   */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     configureTableColumns();
@@ -42,6 +47,10 @@ public class ViewClientsController implements Initializable {
     Launcher.getLogger().info("ViewClientsController initialized.");
   }
 
+  /**
+   * Configures the table columns for the TableView. Each column is set up to display specific
+   * attributes of the Client objects, such as first name, last name, email, etc.
+   */
   private void configureTableColumns() {
     colClientId.setCellValueFactory(new PropertyValueFactory<>("Id"));
     colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
@@ -54,6 +63,10 @@ public class ViewClientsController implements Initializable {
     colNotes.setCellValueFactory(new PropertyValueFactory<>("Notes"));
   }
 
+  /**
+   * Sets up the edit button for each row in the clients table. This button allows the user to edit
+   * the selected client's details in a separate editing form.
+   */
   private void setupEditButton() {
     colEdit.setCellFactory(
         param ->
@@ -76,6 +89,10 @@ public class ViewClientsController implements Initializable {
             });
   }
 
+  /**
+   * Configures the delete button for each row in the clients table. This button enables the
+   * deletion of the selected client, with a confirmation prompt before proceeding.
+   */
   private void setupDeleteButton() {
     colDelete.setCellFactory(
         param ->
@@ -98,6 +115,12 @@ public class ViewClientsController implements Initializable {
             });
   }
 
+  /**
+   * Opens the client editing form for the selected client. The form is pre-populated with the
+   * client's existing data, allowing for modifications.
+   *
+   * @param client The client object to be edited.
+   */
   private void editClient(Client client) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("addClient.fxml"));
@@ -113,6 +136,12 @@ public class ViewClientsController implements Initializable {
     }
   }
 
+  /**
+   * Initiates the deletion process for a selected client by presenting a confirmation alert. If
+   * confirmed, the client is removed from the database and the table.
+   *
+   * @param client The client object to be deleted.
+   */
   private void deleteClient(Client client) {
     if (client == null || client.getId() == 0) {
       AlertHelper.showAlert("No client selected to delete!", Alert.AlertType.ERROR);
@@ -136,6 +165,12 @@ public class ViewClientsController implements Initializable {
             });
   }
 
+  /**
+   * Executes the deletion of a client from the database. If successful, also removes the client
+   * from the table view.
+   *
+   * @param client The client object to be deleted from the database.
+   */
   private void executeDelete(Client client) {
     String sql = "DELETE FROM clients WHERE client_id = ?";
 
@@ -160,10 +195,21 @@ public class ViewClientsController implements Initializable {
     }
   }
 
+  /**
+   * Sets up a listener on the search field to dynamically filter the displayed clients in the table
+   * as the user types.
+   */
   private void setupSearch() {
     searchField.textProperty().addListener((obs, oldVal, newVal) -> filterClients(newVal));
   }
 
+  /**
+   * Filters the clients displayed in the table based on the search text input by the user. If the
+   * search text is empty, all clients are displayed. Otherwise, only clients matching the search
+   * criteria are shown.
+   *
+   * @param searchText The text used to filter the clients displayed.
+   */
   private void filterClients(String searchText) {
     if (searchText == null || searchText.isEmpty()) {
       clientsTable.setItems(clients);
@@ -178,6 +224,10 @@ public class ViewClientsController implements Initializable {
     }
   }
 
+  /**
+   * Loads all client data from the database into the clients table. Each row in the table
+   * represents a client, displaying details such as name, email, phone number, etc.
+   */
   private void loadClientData() {
     DatabaseConnection dbConnection = new DatabaseConnection();
     Connection conn = dbConnection.getConnection();

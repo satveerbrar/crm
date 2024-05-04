@@ -3,6 +3,11 @@ package com.satveerbrar.crm;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/**
+ * Represents a client with observable properties that can be bound to a JavaFX UI. This class
+ * includes properties for client details like name, email, phone number, and others, enabling
+ * automatic updates to the UI when these properties change.
+ */
 public class Client {
 
   private final SimpleIntegerProperty id;
@@ -144,6 +149,13 @@ public class Client {
     return notes;
   }
 
+  /**
+   * Determines if the client's details match the given search text. This search is case-insensitive
+   * and checks if the search text is contained within any of the client's relevant properties.
+   *
+   * @param searchText The text to search within the client's properties.
+   * @return true if any property contains the search text; false otherwise.
+   */
   public boolean matchesSearch(String searchText) {
     return getFirstName().toLowerCase().contains(searchText.toLowerCase())
         || getLastName().toLowerCase().contains(searchText.toLowerCase())
