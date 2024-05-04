@@ -235,7 +235,7 @@ public class ViewApplicationsController implements Initializable {
                 rs.getString("LAST_NAME"),
                 rs.getString("APPLICATION_TYPE"),
                 rs.getString("APPLICATION_STATUS"),
-                rs.getString("SUBMISSION_DATE"),
+                rs.getDate("SUBMISSION_DATE").toString(),
                 rs.getString("PRIORITY"),
                 rs.getString("NOTES")));
       }
