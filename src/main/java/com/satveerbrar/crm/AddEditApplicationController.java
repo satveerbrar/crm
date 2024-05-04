@@ -107,7 +107,7 @@ public class AddEditApplicationController implements Initializable {
 
     applicationStatusChoiceBox
         .getItems()
-        .addAll("Not Started", "In progress", "Approved", "Rejected");
+        .addAll("Not Started", "In Progress", "Approved", "Rejected");
     applicationStatusChoiceBox.setValue("Select Status");
 
     priorityChoiceBox.getItems().addAll("Low", "Medium", "High");
