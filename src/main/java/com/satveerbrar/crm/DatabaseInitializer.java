@@ -2,9 +2,19 @@ package com.satveerbrar.crm;
 
 import java.sql.*;
 
+/**
+ * Handles the initialization of the database for the CRM application. This class checks for the
+ * existence of necessary tables and creates them if they do not exist. It also populates the
+ * user_accounts table with initial data.
+ */
 public class DatabaseInitializer {
   private static final String DATABASE_URL = "jdbc:sqlite:crm.db";
 
+  /**
+   * Initializes the database by establishing a connection and creating tables for user accounts,
+   * clients, and applications if they do not already exist. This method ensures the database is
+   * ready for use by the application.
+   */
   public static void initializeDatabase() {
     try (Connection conn = DriverManager.getConnection(DATABASE_URL)) {
       if (conn != null) {
@@ -17,6 +27,12 @@ public class DatabaseInitializer {
     }
   }
 
+  /**
+   * Checks for the existence of the 'user_accounts' table and creates it if it does not exist.
+   *
+   * @param conn The connection to the database.
+   * @throws SQLException If there is an error in executing the SQL commands.
+   */
   private static void createTableUserAccount(Connection conn) throws SQLException {
     DatabaseMetaData meta = conn.getMetaData();
     ResultSet res = meta.getTables(null, null, "user_accounts", new String[] {"TABLE"});
@@ -39,6 +55,13 @@ public class DatabaseInitializer {
     }
   }
 
+  /**
+   * Creates the 'clients' table if it does not exist. This table stores information about the
+   * clients including personal details and contact information.
+   *
+   * @param conn The connection to the database.
+   * @throws SQLException If there is an error in executing the SQL commands.
+   */
   private static void createTableClients(Connection conn) throws SQLException {
     Launcher.getLogger().info("Creating clients table if not exists...");
     String sqlCreateClientsTable =
@@ -59,6 +82,13 @@ public class DatabaseInitializer {
     }
   }
 
+  /**
+   * Creates the 'applications' table if it does not exist. This table stores application details
+   * linked to clients, including application type, status, and related notes.
+   *
+   * @param conn The connection to the database.
+   * @throws SQLException If there is an error in executing the SQL commands.
+   */
   private static void createTableApplications(Connection conn) throws SQLException {
     Launcher.getLogger().info("Creating applications table if not exists...");
     String sqlCreateApplicationsTable =
@@ -78,6 +108,13 @@ public class DatabaseInitializer {
     }
   }
 
+  /**
+   * Inserts initial data into the 'user_accounts' table to ensure there are default login
+   * credentials available immediately after database setup.
+   *
+   * @param conn The database connection to use for the insert operation.
+   * @throws SQLException If there is an error in executing the insert command.
+   */
   private static void insertInitialData(Connection conn) {
     Launcher.getLogger().info("Inserting initial data to user_accounts table");
     String sqlInsert =

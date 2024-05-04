@@ -31,6 +31,10 @@ public class ViewApplicationsController implements Initializable {
   @FXML private TableColumn<ApplicationClient, Void> colEdit, colDelete;
   @FXML private TextField searchField;
 
+  /**
+   * Initializes the controller, setting up the table columns, search functionality, data loading,
+   * and edit/delete button actions for the applications table.
+   */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     colFirstName.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
@@ -49,6 +53,10 @@ public class ViewApplicationsController implements Initializable {
     Launcher.getLogger().info("ViewApplicationsController initialized.");
   }
 
+  /**
+   * Configures an 'Edit' button for each row in the applications table to allow modifications to
+   * the selected application.
+   */
   private void setupEditButton() {
     colEdit.setCellFactory(
         param ->
@@ -72,6 +80,10 @@ public class ViewApplicationsController implements Initializable {
             });
   }
 
+  /**
+   * Configures the delete button for each row in the applications table. This button enables the
+   * deletion of the selected application, with a confirmation prompt before deletion.
+   */
   private void setupDeleteButton() {
     colDelete.setCellFactory(
         param ->
@@ -95,6 +107,11 @@ public class ViewApplicationsController implements Initializable {
             });
   }
 
+  /**
+   * Loads the application edit form with the selected application's data for editing.
+   *
+   * @param applicationClient The application client data to be edited.
+   */
   private void editApplication(ApplicationClient applicationClient) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("addApplication.fxml"));
@@ -110,6 +127,12 @@ public class ViewApplicationsController implements Initializable {
     }
   }
 
+  /**
+   * Prompts for confirmation and call executeDelete method for selected application to delete from
+   * database and table view if confirmed.
+   *
+   * @param applicationClient The application client data to be deleted.
+   */
   private void deleteApplication(ApplicationClient applicationClient) {
     if (applicationClient == null || applicationClient.getId() == 0) {
       AlertHelper.showAlert("No application selected to delete!", Alert.AlertType.ERROR);
@@ -133,6 +156,12 @@ public class ViewApplicationsController implements Initializable {
             });
   }
 
+  /**
+   * Executes the deletion of the application in the database and updates the table view if
+   * successful.
+   *
+   * @param applicationClient The application client whose data is to be deleted from the database.
+   */
   private void executeDelete(ApplicationClient applicationClient) {
     String sql = "DELETE FROM applications WHERE application_id = ?";
 
@@ -157,10 +186,19 @@ public class ViewApplicationsController implements Initializable {
     }
   }
 
+  /**
+   * Sets up a listener on the search text field to filter the applications table dynamically based
+   * on user input.
+   */
   private void setupSearch() {
     searchField.textProperty().addListener((obs, oldVal, newVal) -> filterApplications(newVal));
   }
 
+  /**
+   * Filters the applications displayed in the table based on the search text input by the user.
+   *
+   * @param searchText The text used to filter the applications displayed.
+   */
   private void filterApplications(String searchText) {
     if (searchText == null || searchText.isEmpty()) {
       applicationsTable.setItems(applications);
@@ -170,11 +208,16 @@ public class ViewApplicationsController implements Initializable {
         if (applicationClient.matchesSearch(searchText)) {
           filteredList.add(applicationClient);
         }
-        applicationsTable.setItems(filteredList);
       }
+      applicationsTable.setItems(filteredList);
     }
   }
 
+  /**
+   * Loads application data from the database into the table view. Data from 'applications' is
+   * joined with 'clients' to provide comprehensive details for each application. Populates the
+   * table upon initialization.
+   */
   private void loadApplicationData() {
     DatabaseConnection dbConnection = new DatabaseConnection();
     Connection conn = dbConnection.getConnection();
