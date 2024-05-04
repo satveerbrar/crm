@@ -245,7 +245,7 @@ public class ViewClientsController implements Initializable {
                 rs.getString("PHONE_NUMBER"),
                 rs.getString("REFERENCE"),
                 rs.getString("CITIZENSHIP"),
-                rs.getString("DATE"),
+                rs.getDate("DATE").toString(),
                 rs.getString("NOTES")));
       }
       Launcher.getLogger().info("Client data loaded successfully.");
