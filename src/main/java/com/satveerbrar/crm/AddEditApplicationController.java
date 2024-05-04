@@ -13,6 +13,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * Controller class for managing both addition and editing of client application records. This class
+ * handles the interaction logic for the Add/Edit Application form UI.
+ */
 public class AddEditApplicationController implements Initializable {
 
   @FXML private TextField clientId, nameField, emailField;
@@ -23,6 +27,10 @@ public class AddEditApplicationController implements Initializable {
   @FXML private Button applicationSubmitButton;
   private ApplicationClient editingApplicationClient;
 
+  /**
+   * Initializes the controller class. This method is automatically called after the FXML fields
+   * have been populated. Sets up the UI components with initial data and configurations.
+   */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initializeChoiceBoxes();
@@ -31,6 +39,10 @@ public class AddEditApplicationController implements Initializable {
     Launcher.getLogger().info("AddEditApplicationController initialized.");
   }
 
+  /**
+   * Sets up a listener on the clientId text field to dynamically update form fields as the user
+   * type client ID in Edit form.
+   */
   private void setupClientIdChangeListener() {
     clientId
         .textProperty()
@@ -42,6 +54,12 @@ public class AddEditApplicationController implements Initializable {
             });
   }
 
+  /**
+   * Updates the form Text fields in real time with client information based on the provided client
+   * ID. This method is used by clientId listener only
+   *
+   * @param clientId The ID of the client whose information is to be fetched and displayed. fields
+   */
   private void updatePromptTexts(String clientId) {
     DatabaseConnection dbConnection = new DatabaseConnection();
     String sql = "SELECT first_name, last_name, email FROM clients WHERE client_id = ?";
@@ -71,6 +89,10 @@ public class AddEditApplicationController implements Initializable {
     }
   }
 
+  /**
+   * Initializes the choice boxes with predefined data for application type, status and priority
+   * levels.
+   */
   private void initializeChoiceBoxes() {
     applicationTypeChoiceBox
         .getItems()
@@ -92,6 +114,12 @@ public class AddEditApplicationController implements Initializable {
     priorityChoiceBox.setValue("Select Priority");
   }
 
+  /**
+   * Handles the form submission. It calls for another method validateInputs() before saving to the
+   * database.
+   *
+   * @param actionEvent The event that triggered the submission.
+   */
   public void submitForm(ActionEvent actionEvent) {
     if (validateInputs()) {
       saveToDatabase(editingApplicationClient == null);
@@ -100,6 +128,14 @@ public class AddEditApplicationController implements Initializable {
     }
   }
 
+  /**
+   * This method gets called from ViewApplicationController. If User clicks Edit button related to
+   * any application then it call this method to initialize the form with clients data and change
+   * heading of the form to Edit existing application.
+   *
+   * @param applicationClient This is the applicaiton client which need to edited or null if
+   *     creating new application.
+   */
   public void setEditingApplicationClient(ApplicationClient applicationClient) {
     this.editingApplicationClient = applicationClient;
     if (applicationClient != null) {
@@ -110,6 +146,7 @@ public class AddEditApplicationController implements Initializable {
     }
   }
 
+  /** Initialize the form with existing ApplicationClient data using getters */
   private void initializeFormWithClientData() {
     clientId.setDisable(true);
     applicationTypeChoiceBox.setValue(editingApplicationClient.getApplicationType());
@@ -118,6 +155,19 @@ public class AddEditApplicationController implements Initializable {
     notesInput.setText(editingApplicationClient.getNotes());
   }
 
+  /**
+   * Validates the client ID from the input field, ensuring it is not only a valid integer but also
+   * corresponds to an existing client in the database. This method is pivotal for ensuring that
+   * operations are performed on valid client data.
+   *
+   * @param clientId The client ID as a string from the clientId text field. It should not be null
+   *     or empty.
+   * @return true if the client ID is valid and corresponds to an existing client, false otherwise.
+   * @throws NumberFormatException If the client ID is not a valid integer. This exception is caught
+   *     and handled within the method, triggering a user alert.
+   * @see DatabaseConnection#getConnection() Uses the DatabaseConnection class to establish a
+   *     database connection.
+   */
   public boolean validateClientId(String clientId) {
 
     if (editingApplicationClient != null) {
@@ -165,6 +215,10 @@ public class AddEditApplicationController implements Initializable {
     return true;
   }
 
+  /**
+   * @return true if all validations are successful. This method does not perform any logic but
+   *     serves the entry point for all validation of every form fields before submission
+   */
   private boolean validateInputs() {
     return validateClientId(clientId.getText().trim())
         && validateChoiceBox(
@@ -173,6 +227,17 @@ public class AddEditApplicationController implements Initializable {
         && validateChoiceBox(priorityChoiceBox, "Select Priority", "priority");
   }
 
+  /**
+   * Validate that user has selected a valid option in a ChoiceBox before submitting form. This
+   * check ensures that the user does not proceed with the default or an improper selection.
+   *
+   * @param choiceBox The ChoiceBox to validate
+   * @param defaultValue default value set when form loads, used to prompt user action. e.g. 'Choose
+   *     an application status'
+   * @param fieldName It corresponds to the ChoiceBox and help customize the alert message if
+   *     validation fails
+   * @return true if valid option selected or not equal to default value; false otherwise.
+   */
   private boolean validateChoiceBox(
       ChoiceBox<String> choiceBox, String defaultValue, String fieldName) {
     if (choiceBox.getValue() == null || choiceBox.getValue().equals(defaultValue)) {
@@ -183,6 +248,19 @@ public class AddEditApplicationController implements Initializable {
     return true;
   }
 
+  /**
+   * Saves application data to the database by either inserting a new record or updating an existing
+   * one. This method determines the operation (insert or update) based on the passed boolean
+   * parameter. It also handles user feedback via alerts and manages the UI by closing the editing
+   * stage upon successful updates or clearing the form when a new application is added.
+   *
+   * @param isNew If true, a new application record will be inserted. If false, an existing
+   *     application will be updated.
+   * @throws SQLException If there is a database access error or other errors related to database
+   *     queries.
+   * @throws NumberFormatException If the client ID cannot be parsed into an integer, indicating a
+   *     format error.
+   */
   private void saveToDatabase(boolean isNew) {
     String sql =
         isNew
@@ -230,6 +308,11 @@ public class AddEditApplicationController implements Initializable {
     }
   }
 
+  /**
+   * Clears all user input fields and resets the selection in choice boxes to their default states.
+   * This method is typically called after successfully adding a new application to reset the form,
+   * preparing it for another entry if needed.
+   */
   private void clearForm() {
     clientId.clear();
     notesInput.clear();
@@ -238,6 +321,11 @@ public class AddEditApplicationController implements Initializable {
     priorityChoiceBox.setValue("Select Priority");
   }
 
+  /**
+   * Closes the current stage (window). This method is typically called after an existing
+   * application has been successfully updated, allowing the user to return to the main application
+   * interface.
+   */
   private void closeStage() {
     Stage stage = (Stage) applicationTypeChoiceBox.getScene().getWindow();
     stage.close();
